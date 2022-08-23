@@ -1,0 +1,19 @@
+{
+    "name": "sglms/gtin",
+    "description": "Classes to create or validate GTIN (Global Trade Item Number)",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://sglms.com",
+    "autoload": {
+        "psr-4": {
+            "Sglms\\Gtin\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "James",
+            "email": "james@sglm.com"
+        }
+    ],
+    "require": {}
+}
