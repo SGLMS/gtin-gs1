@@ -12,8 +12,10 @@
     "authors": [
         {
             "name": "James",
-            "email": "james@sglm.com"
+            "email": "james@sglms.com"
         }
     ],
-    "require": {}
+    "require": {
+        "picqer/php-barcode-generator": "^2.2"
+    }
 }
