@@ -1,9 +1,30 @@
 <?php
 
+/**
+ * SGLMS GS1 / GTIN
+ *
+ * PHP Version 8.1
+ *
+ * @category Library
+ * @package  GS1GTIN
+ * @author   Jaime C. Rubin-de-Celis <james@sglms.com>
+ * @license  MIT (https://sglms.com/licence)
+ * @link     https://sglms.com
+ **/
+
 declare( strict_types = 1 );
 
 namespace Sglms\Gtin;
 
+/**
+ * GS1 Class
+ *
+ * @category Library
+ * @package  GS1GTIN
+ * @author   Jaime C. Rubin-de-Celis <james@sglms.com>
+ * @license  MIT (https://sglms.com/licence)
+ * @link     https://sglms.com
+ **/
 class Gs1
 {
     protected string $gs1;
@@ -12,6 +33,13 @@ class Gs1
     public int|float $netWeight;
     public int|float $grossWeight;
 
+    /**
+     * Constructor
+     *
+     * @param string $gs1 Number
+     *
+     * @return void
+     **/
     public function __construct(?string $gs1)
     {
         $this->gs1 = $gs1;
@@ -38,9 +66,13 @@ class Gs1
         }
     }
 
+    /**
+     * Display GS1 Number
+     *
+     * @return string
+     **/
     public function __toString()
     {
         return $this->gs1;
     }
-
 }

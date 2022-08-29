@@ -1,11 +1,32 @@
 <?php
 
+/**
+ * SGLMS GS1 / GTIN
+ *
+ * PHP Version 8.1
+ *
+ * @category Library
+ * @package  GS1GTIN
+ * @author   Jaime C. Rubin-de-Celis <james@sglms.com>
+ * @license  MIT (https://sglms.com/licence)
+ * @link     https://sglms.com
+ **/
+
 declare(strict_types=1);
 
 namespace Sglms\Gtin;
 
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
+/**
+ * GS1 Codes Enumerate
+ *
+ * @category Library
+ * @package  GS1GTINn
+ * @author   Jaime C. Rubin-de-Celis <james@sglms.com>
+ * @license  MIT (https://sglms.com/licence)
+ * @link     https://sglms.com
+ **/
 class Gtin
 {
     protected int    $baseNumber;
@@ -15,6 +36,13 @@ class Gtin
     public int       $number;
     public int       $indicator = 1;
 
+    /**
+     * Constructor
+     *
+     * @param int $number Number
+     *
+     * @return void
+     **/
     public function __construct(?int $number)
     {
         if (strlen((string) $number) > 14) {
@@ -41,11 +69,21 @@ class Gtin
         return $this;
     }
 
+    /**
+     * Display GTIN Number
+     *
+     * @return string
+     **/
     public function __toString()
     {
         return (string) $this->number;
     }
 
+    /**
+     * Calculate Check Digit
+     *
+     * @return int
+     **/
     protected function getCheckDigit(): int
     {
         $base   = str_pad((string) $this->baseNumber, 15, '0', STR_PAD_LEFT);
@@ -58,12 +96,34 @@ class Gtin
         return 10 == $cd ? 0 : $cd;
     }
 
+    /**
+     * Get (base64) barcode image source.
+     *
+     * @param int $sep    Separation or with of barcode
+     * @param int $height Barcode Height
+     *
+     * @return string
+     **/
     final public function getBarcodeSource(int $sep = 2, int $height = 36): string
     {
         $generator  = new BarcodeGeneratorPNG();
-        return "data:image/png;base64," . base64_encode($generator->getBarcode($this->number, $generator::TYPE_CODE_128, $sep, $height));
+        return "data:image/png;base64," . base64_encode(
+            $generator->getBarcode(
+                $this->number,
+                $generator::TYPE_CODE_128,
+                $sep,
+                $height
+            )
+        );
     }
 
+    /**
+     * Create a GTIN number (object) from a int or string
+     *
+     * @param int $number
+     *
+     * @return \Sglms\Gtin\Gtin
+     **/
     final public static function create(int $number): \Sglms\Gtin\Gtin
     {
         $gtin             = new self($number);
