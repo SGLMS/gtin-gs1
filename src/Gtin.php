@@ -120,7 +120,7 @@ class Gtin
     /**
      * Create a GTIN number (object) from a int or string
      *
-     * @param int $number
+     * @param int $number Number
      *
      * @return \Sglms\Gtin\Gtin
      **/

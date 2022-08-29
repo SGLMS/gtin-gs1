@@ -12,7 +12,7 @@
  * @link     https://sglms.com
  **/
 
-declare( strict_types = 1 );
+declare(strict_types=1);
 
 namespace Sglms\Gtin;
 
@@ -48,18 +48,22 @@ class Gs1
             if (0 == $index % 2) {
                 $key    = preg_replace("/[\(\)]/", "", $item);
                 $code   = Gs1Code::tryFrom($key);
-                if($code) {
+                if ($code) {
                     $array [$key]   = $gs1Array[$index + 1];
                     switch($code) {
-                        case Gs1Code::GTIN :
-                        case Gs1Code::ITF :
-                            $this->gtin = (int) $gs1Array[$index + 1]; break;
-                        case Gs1Code::NetWeight :
-                            $this->netWeight = (int) $gs1Array[$index + 1] / 100; break;
-                        case Gs1Code::GrossWeight :
-                            $this->grossWeight = (int) $gs1Array[$index + 1] / 100; break;
-                        case Gs1Code::Units :
-                            $this->units = (int) $gs1Array[$index + 1]; break;
+                    case Gs1Code::GTIN:
+                    case Gs1Code::ITF:
+                        $this->gtin = (int) $gs1Array[$index + 1];
+                        break;
+                    case Gs1Code::NetWeight:
+                        $this->netWeight = (int) $gs1Array[$index + 1] / 100;
+                        break;
+                    case Gs1Code::GrossWeight:
+                        $this->grossWeight = (int) $gs1Array[$index + 1] / 100;
+                        break;
+                    case Gs1Code::Units:
+                        $this->units = (int) $gs1Array[$index + 1];
+                        break;
                     }
                 }
             }
