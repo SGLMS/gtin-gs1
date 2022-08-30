@@ -8,13 +8,13 @@
  * @category Library
  * @package  GS1GTIN
  * @author   Jaime C. Rubin-de-Celis <james@sglms.com>
- * @license  MIT (https://sglms.com/licence)
+ * @license  MIT (https://sglms.com/license)
  * @link     https://sglms.com
  **/
 
 declare(strict_types=1);
 
-namespace Sglms\Gtin;
+namespace Sglms\Gs1Gtin;
 
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
@@ -22,9 +22,9 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  * GS1 Codes Enumerate
  *
  * @category Library
- * @package  GS1GTINn
+ * @package  GS1GTIN
  * @author   Jaime C. Rubin-de-Celis <james@sglms.com>
- * @license  MIT (https://sglms.com/licence)
+ * @license  MIT (https://sglms.com/license)
  * @link     https://sglms.com
  **/
 class Gtin
@@ -39,11 +39,13 @@ class Gtin
     /**
      * Constructor
      *
-     * @param int $number Number
+     * @param int    $number        Item Reference Number (See GS1 Standards)
+     * @param string $companyPrefix Company Prefix or Id
+     * @param int    $indicator     Indicator / Packaging Level (See GS1 Standards)
      *
      * @return void
      **/
-    public function __construct(?int $number)
+    public function __construct(?int $number, ?string $companyPrefix = null, ?int $indicator = 1)
     {
         if (strlen((string) $number) > 14) {
             $number = (int) substr((string) $number, 0, 14);
@@ -59,8 +61,10 @@ class Gtin
                 throw new \ErrorException(_("This appears to be a GTIN-14 number, but Check Digit could not be validated!"), 1000, 1);
             }
         } else {
-            $this->indicator  = 1;
-            $this->companyPrefix = sprintf('%07d', substr((string) $number, 0, -5));
+            $this->indicator  = $indicator ?? 1;
+            $this->companyPrefix = $companyPrefix ?
+                sprintf('%07d', $companyPrefix) :
+                sprintf('%07d', substr((string) $number, 0, -5));
             $this->itemReference = sprintf('%05d', substr((string) $number, -5));
             $this->baseNumber = (int) ($this->indicator . $this->companyPrefix . $this->itemReference);
             $this->checkDigit = $this->getCheckDigit();
@@ -120,13 +124,18 @@ class Gtin
     /**
      * Create a GTIN number (object) from a int or string
      *
-     * @param int $number Number
+     * @param int    $number         Number
+     * @param string $companyPrefix  Client Code or Id
+     * @param string $packagingLevel Packaging Level (Indicator according to GS1 Standards)
      *
      * @return \Sglms\Gtin\Gtin
      **/
-    final public static function create(int $number): \Sglms\Gtin\Gtin
-    {
-        $gtin             = new self($number);
+    final public static function create(
+        int $number,
+        ?string $companyPrefix = null,
+        int $packagingLevel = 1
+    ): \Sglms\Gs1Gtin\Gtin {
+        $gtin                   = new self($number, $companyPrefix, $packagingLevel);
         $gtin->checkDigit = $gtin->getCheckDigit();
         return $gtin;
     }

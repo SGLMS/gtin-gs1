@@ -8,13 +8,15 @@
  * @category Library
  * @package  GS1GTIN
  * @author   Jaime C. Rubin-de-Celis <james@sglms.com>
- * @license  MIT (https://sglms.com/licence)
+ * @license  MIT (https://sglms.com/license)
  * @link     https://sglms.com
  **/
 
 declare(strict_types=1);
 
-namespace Sglms\Gtin;
+namespace Sglms\Gs1Gtin;
+
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 /**
  * GS1 Class
@@ -22,7 +24,7 @@ namespace Sglms\Gtin;
  * @category Library
  * @package  GS1GTIN
  * @author   Jaime C. Rubin-de-Celis <james@sglms.com>
- * @license  MIT (https://sglms.com/licence)
+ * @license  MIT (https://sglms.com/license)
  * @link     https://sglms.com
  **/
 class Gs1
@@ -32,6 +34,9 @@ class Gs1
     public int       $units;
     public int|float $netWeight;
     public int|float $grossWeight;
+    public int       $batch;
+    public \DateTime $productionDate;
+    public \DateTime $expirationDate;
 
     /**
      * Constructor
@@ -52,8 +57,8 @@ class Gs1
                     $array [$key]   = $gs1Array[$index + 1];
                     switch($code) {
                     case Gs1Code::GTIN:
-                    case Gs1Code::ITF:
-                        $this->gtin = (int) $gs1Array[$index + 1];
+                    case Gs1Code::Content:
+                        $this->gtin = (Gtin::create((int) $gs1Array[$index + 1]))->number;
                         break;
                     case Gs1Code::NetWeight:
                         $this->netWeight = (int) $gs1Array[$index + 1] / 100;
@@ -63,6 +68,15 @@ class Gs1
                         break;
                     case Gs1Code::Units:
                         $this->units = (int) $gs1Array[$index + 1];
+                        break;
+                    case Gs1Code::BatchNumber:
+                        $this->batch = (int) $gs1Array[$index + 1];
+                        break;
+                    case Gs1Code::ProductionDate:
+                        $this->productionDate = \DateTime::createFromFormat("ymd", $gs1Array[$index + 1]);
+                        break;
+                    case Gs1Code::ExpirationDate:
+                        $this->expirationDate = \DateTime::createFromFormat("ymd", $gs1Array[$index + 1]);
                         break;
                     }
                 }
@@ -78,5 +92,26 @@ class Gs1
     public function __toString()
     {
         return $this->gs1;
+    }
+
+    /**
+     * Get (base64) barcode image source.
+     *
+     * @param int $sep    Separation or with of barcode
+     * @param int $height Barcode Height
+     *
+     * @return string
+     **/
+    final public function getBarcodeSource(int $sep = 2, int $height = 36): string
+    {
+        $generator  = new BarcodeGeneratorPNG();
+        return "data:image/png;base64," . base64_encode(
+            $generator->getBarcode(
+                $this->gs1,
+                $generator::TYPE_CODE_128,
+                $sep,
+                $height
+            )
+        );
     }
 }
