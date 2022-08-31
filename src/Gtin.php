@@ -53,7 +53,7 @@ class Gtin
         }
         if (strlen((string) $number) === 14) {
             $strArray              = str_split((string) $number);
-            echo $this->baseNumber = (int) substr((string) $number, 0, strlen((string) $number) - 1);
+            $this->baseNumber      = (int) substr((string) $number, 0, strlen((string) $number) - 1);
             $this->indicator       = (int) substr((string) $number, 0, 1);
             $this->checkDigit      = (int) substr((string) $number, -1);
             $this->companyPrefix   = sprintf('%07d', substr((string) $this->baseNumber, 1, -5));
