@@ -1,4 +1,4 @@
-# GTIN / GS1
+# GS1 / GTIN
 
 Simple classes to handle GS1-128 / GTIN-14 numbers and barcodes.
 
@@ -24,11 +24,18 @@ $gtin = Gtin::create(45678, '0123');    // Item Reference + Client Prefix
 // Display barcode
 echo "<img src='" . $gtin->getBarcodeSource() . "' />";
 ```
-GTIN: 1000000045678
 
 ![barcode](resources/gtin.png "Generated barcode")
 
-### GS1:
+```php
+// Save barcode
+echo $gtin->saveBarcode('barcode');
+echo "<img src='barcode.jpg' />";
+```
+
+![barcode](resources/gtin.jpg "Generated barcode")
+
+### GS1
 
 ```php
 use Sglms\Gs1Gtin\Gs1;
@@ -44,8 +51,34 @@ $gs1 = new Gs1('(01)1234(3102)123456(3302)134567(37)20(11)220801(17)221231');
 
 echo "<img src='" . $gs1->getBarcodeSource() . "' />";
 ```
+
 GS1-128: (01)1234(3102)123456(3302)134567(37)20(11)220801(17)221231
 
 ![barcode](resources/gs1.png "Generated barcode")
 
+```php
+$gs1->saveBarcode('gs1');
+echo "<img src='gs1.jpg' />";
+```
+
+![barcode](resources/gs1.jpg "Generated barcode")
+
 GS1 Identifiers can be found [here](https://www.databar-barcode.info/application-identifiers/). We use only a few, they are enumerated in `src/Gs1Codes.php`, you can add your own as needed.
+
+```php
+enum Gs1Code: string
+{
+    case GTIN           = '01'; // n2+n14
+    case Content        = '02'; // n2+n14
+    case BatchNumber    = '10';
+    case ProductionDate = '11'; // n2+n6
+    case PaymentDate    = '12'; // n2+n6
+    case BestBeforeDate = '15'; // n2+n6
+    case ExpirationDate = '17'; // n2+n6
+    case SerialNumber   = '21';
+    case Units          = '37'; // n2+n..8
+    case NetWeight      = '3102'; //n4+n6 (2 decimals)
+    case GrossWeight    = '3302'; //n4+n6 (2 decimals)
+}
+```
+

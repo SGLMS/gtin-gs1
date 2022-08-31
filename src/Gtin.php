@@ -5,7 +5,7 @@
  *
  * PHP Version 8.1
  *
- * @category Library
+ * @category SGLMS_Library
  * @package  GS1GTIN
  * @author   Jaime C. Rubin-de-Celis <james@sglms.com>
  * @license  MIT (https://sglms.com/license)
@@ -17,11 +17,12 @@ declare(strict_types=1);
 namespace Sglms\Gs1Gtin;
 
 use Picqer\Barcode\BarcodeGeneratorPNG;
+use Picqer\Barcode\BarcodeGeneratorJPG;
 
 /**
  * GS1 Codes Enumerate
  *
- * @category Library
+ * @category SGLMS_Library
  * @package  GS1GTIN
  * @author   Jaime C. Rubin-de-Celis <james@sglms.com>
  * @license  MIT (https://sglms.com/license)
@@ -119,6 +120,49 @@ class Gtin
                 $height
             )
         );
+    }
+
+    /**
+     * Save barcode image (PNG).
+     *
+     * @param string $filename Separation or with of barcode
+     * @param int    $sep      Separation or with of barcode
+     * @param int    $height   Barcode Height
+     *
+     * @return string
+     **/
+    final public function saveBarcode(string $filename, int $sep = 2, int $height = 36): void
+    {
+        $generator  = new BarcodeGeneratorJPG();
+        \file_put_contents(
+            $filename . ".jpg",
+            $generator->getBarcode(
+                $this->number,
+                $generator::TYPE_CODE_128,
+                $sep,
+                $height
+            )
+        );
+        $barcode  = imagecreatefromjpeg($filename . ".jpg");
+        $bcWidth  = imagesx($barcode);
+        $bcHeight = imagesy($barcode);
+        $canvas   = imagecreatetruecolor($bcWidth, $bcHeight + 20);
+        $bgColor  = imagecolorallocate($canvas, 255, 255, 255);
+        imagefilledrectangle($canvas, 0, 0, $bcWidth, $bcHeight + 20, $bgColor);
+        imagecopyresampled($canvas, $barcode, 0, 0, 0, 0, $bcWidth, $bcHeight, $bcWidth, $bcHeight);
+        imagedestroy($barcode);
+
+        imagettftext(
+            $canvas,
+            11,
+            0,
+            (int) ($bcWidth * 0.25),
+            $bcHeight + 16,
+            imagecolorallocate($canvas, 10, 10, 10),
+            'resources/Montserrat-SemiBold.ttf',
+            (string) $this->number
+        );
+        imagejpeg($canvas, $filename . ".jpg", 100);
     }
 
     /**
