@@ -31,6 +31,7 @@ use Picqer\Barcode\BarcodeGeneratorJPG;
 class Gs1
 {
     public string    $gs1;
+    public array     $gs1Array;
     public int       $gtin;
     public int       $units;
     public int|float $netWeight;
@@ -50,39 +51,41 @@ class Gs1
     {
         $this->gs1 = $gs1;
         $gs1Array = preg_split("/(\([0-9]*\))/", $gs1, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        $this->gs1Array = $gs1Array;
         foreach ($gs1Array as $index => $item) {
             if (0 == $index % 2) {
                 $key    = preg_replace("/[\(\)]/", "", $item);
                 $code   = Gs1Code::tryFrom($key);
                 if ($code) {
                     $array [$key]   = $gs1Array[$index + 1];
-                    switch($code) {
-                    case Gs1Code::GTIN:
-                    case Gs1Code::Content:
-                        $this->gtin = (Gtin::create((int) $gs1Array[$index + 1]))->number;
-                        break;
-                    case Gs1Code::NetWeight:
-                        $this->netWeight = (int) $gs1Array[$index + 1] / 100;
-                        break;
-                    case Gs1Code::GrossWeight:
-                        $this->grossWeight = (int) $gs1Array[$index + 1] / 100;
-                        break;
-                    case Gs1Code::Units:
-                        $this->units = (int) $gs1Array[$index + 1];
-                        break;
-                    case Gs1Code::BatchNumber:
-                        $this->batch = (int) $gs1Array[$index + 1];
-                        break;
-                    case Gs1Code::ProductionDate:
-                        $this->productionDate = \DateTime::createFromFormat("ymd", $gs1Array[$index + 1]);
-                        break;
-                    case Gs1Code::ExpirationDate:
-                        $this->expirationDate = \DateTime::createFromFormat("ymd", $gs1Array[$index + 1]);
-                        break;
-                    }
+                    switch($code) :
+                        case Gs1Code::GTIN:
+                        case Gs1Code::Content:
+                            $this->gtin = (Gtin::create((int) $gs1Array[$index + 1]))->number;
+                            break;
+                        case Gs1Code::NetWeight:
+                            $this->netWeight = (int) $gs1Array[$index + 1] / 100;
+                            break;
+                        case Gs1Code::GrossWeight:
+                            $this->grossWeight = (int) $gs1Array[$index + 1] / 100;
+                            break;
+                        case Gs1Code::Units:
+                            $this->units = (int) $gs1Array[$index + 1];
+                            break;
+                        case Gs1Code::BatchNumber:
+                            $this->batch = (int) $gs1Array[$index + 1];
+                            break;
+                        case Gs1Code::ProductionDate:
+                            $this->productionDate = \DateTime::createFromFormat("ymd", $gs1Array[$index + 1]);
+                            break;
+                        case Gs1Code::ExpirationDate:
+                            $this->expirationDate = \DateTime::createFromFormat("ymd", $gs1Array[$index + 1]);
+                            break;
+                    endswitch;
                 }
             }
         }
+        $this->update();
     }
 
     /**
@@ -115,7 +118,7 @@ class Gs1
             )
         );
     }
-    
+
     /**
      * Save barcode image (PNG).
      *
@@ -157,5 +160,20 @@ class Gs1
             (string) $this->gs1
         );
         imagejpeg($canvas, $filename . ".jpg", 100);
+    }
+
+    /**
+     * Update GS1 string to match calculated GTIN
+     *
+     * @return void
+     **/
+    final public function update(): void
+    {
+        $index = array_search('(01)', $this->gs1Array);
+        $gtin  = (int) $this->gs1Array[$index + 1];
+        if ($gtin !== $this->gtin) {
+            $this->gs1Array[$index + 1] = (string) $this->gtin;
+            $this->gs1 = implode($this->gs1Array);
+        }
     }
 }

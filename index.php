@@ -17,23 +17,28 @@ use Sglms\Gs1Gtin\Gs1;
 require_once 'vendor/autoload.php';
 
 $gtin = Gtin::create(45678);    // Item Reference
-/* var_dump($gtin); */
 echo $gtin->number;
 echo "<img src='" . $gtin->getBarcodeSource() . "' />";
+echo "<hr/>";
 
 $gtin = Gtin::create(45678, '0123');    // Item Reference + Client Prefix
 /* var_dump($gtin); */
 echo $gtin->number;
 echo "<img src='" . $gtin->getBarcodeSource() . "' />";
+echo "<hr/>";
 
 $gtin->saveBarcode('resources/gtin');
 echo "<img src='resources/gtin.jpg' />";
+echo "<hr/>";
 
 $gs1 = new Gs1('(01)1234(3102)123456(3302)134567(37)20(11)220801(17)221231');
 /* var_dump($gs1); */
 echo $gs1->gs1;
 echo "<img src='" . $gs1->getBarcodeSource(1) . "' />";
+echo "<hr/>";
 
 $gs1->saveBarcode('resources/gs1');
 echo "<img src='resources/gs1.jpg' />";
+echo "<hr/>";
 print_r($gs1);
+
