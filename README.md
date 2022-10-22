@@ -35,7 +35,7 @@ echo "<img src='barcode.jpg' />";
 
 ![barcode](resources/gtin.jpg "Generated barcode")
 
-### GTIN-2 (UPC-A)
+### GTIN-12 (UPC-A)
 
 Generate GTIN-12 (company number + item number + check digit):
 
