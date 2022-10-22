@@ -20,7 +20,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\BarcodeGeneratorJPG;
 
 /**
- * Class: Gtin
+ * Class: Gtin12
  *
  * @category SGLMS_Library
  * @package  GS1GTIN
@@ -28,15 +28,8 @@ use Picqer\Barcode\BarcodeGeneratorJPG;
  * @license  MIT (https://sglms.com/license)
  * @link     https://sglms.com
  **/
-class Gtin
+class Gtin12 extends Gtin
 {
-    protected int    $baseNumber;
-    protected string $companyPrefix;
-    protected string $itemReference;
-    public int       $checkDigit;
-    public int       $number;
-    public int       $indicator = 1;
-
     /**
      * Constructor
      *
@@ -46,12 +39,12 @@ class Gtin
      *
      * @return void
      **/
-    public function __construct(?int $number, ?string $companyPrefix = null, ?int $indicator = 1)
+    public function __construct(?int $number, ?string $companyPrefix = null, ?int $indicator = 0)
     {
-        if (strlen((string) $number) > 14) {
-            $number = (int) substr((string) $number, 0, 14);
+        if (strlen((string) $number) > 12) {
+            $number = (int) substr((string) $number, 0, 12);
         }
-        if (strlen((string) $number) === 14) {
+        if (strlen((string) $number) === 12) {
             $strArray              = str_split((string) $number);
             $this->baseNumber      = (int) substr((string) $number, 0, strlen((string) $number) - 1);
             $this->indicator       = (int) substr((string) $number, 0, 1);
@@ -59,67 +52,21 @@ class Gtin
             $this->companyPrefix   = sprintf('%07d', substr((string) $this->baseNumber, 1, -5));
             $this->itemReference   = substr((string) $this->baseNumber, -5);
             if ($this->checkDigit !== $this->getCheckDigit()) {
-                throw new \ErrorException(_("This appears to be a GTIN-14 number, but Check Digit could not be validated!"), 1000, 1);
+                throw new \ErrorException(_("This appears to be a GTIN-12 number, it has the right length, but Check Digit could not be validated!"), 1000, 1);
             }
         } else {
-            $this->indicator  = $indicator ?? 1;
-            $this->companyPrefix = $companyPrefix ?
-                sprintf('%07d', $companyPrefix) :
-                sprintf('%07d', substr((string) $number, 0, -5));
-            $this->itemReference = sprintf('%05d', substr((string) $number, -5));
-            $this->baseNumber = (int) ($this->indicator . $this->companyPrefix . $this->itemReference);
-            $this->checkDigit = $this->getCheckDigit();
+            $companyPrefixLength = strlen((string) $companyPrefix);
+            $this->companyPrefix = $companyPrefix;
+            $itemReferenceLength = 11 - $companyPrefixLength;
+            $this->itemReference = sprintf(
+                '%0' . $itemReferenceLength . 'd',
+                (string) $number
+            );
+            $this->baseNumber    = (int) ($this->companyPrefix . $this->itemReference);
+            $this->checkDigit    = $this->getCheckDigit();
         }
         $this->number = (int) ((string) $this->baseNumber . (string) $this->checkDigit);
         return $this;
-    }
-
-    /**
-     * Display GTIN Number
-     *
-     * @return string
-     **/
-    public function __toString()
-    {
-        return (string) $this->number;
-    }
-
-    /**
-     * Calculate Check Digit
-     *
-     * @return int
-     **/
-    protected function getCheckDigit(): int
-    {
-        $base   = str_pad((string) $this->baseNumber, 15, '0', STR_PAD_LEFT);
-        $sum    = 0;
-        for ($i = 0; $i < 15; $i++) {
-            $value = (int) $base[$i];
-            $sum  += ((($i + 1) % 2) * 2 + 1) * $value;
-        }
-        $cd = 10 - ($sum % 10);
-        return 10 == $cd ? 0 : $cd;
-    }
-
-    /**
-     * Get (base64) barcode image source.
-     *
-     * @param int $sep    Separation or with of barcode
-     * @param int $height Barcode Height
-     *
-     * @return string
-     **/
-    final public function getBarcodeSource(int $sep = 2, int $height = 36): string
-    {
-        $generator  = new BarcodeGeneratorPNG();
-        return "data:image/png;base64," . base64_encode(
-            $generator->getBarcode(
-                $this->number,
-                $generator::TYPE_CODE_128,
-                $sep,
-                $height
-            )
-        );
     }
 
     /**
@@ -146,27 +93,83 @@ class Gtin
         $barcode  = imagecreatefromjpeg($filename . ".jpg");
         $bcWidth  = imagesx($barcode);
         $bcHeight = imagesy($barcode);
-        $canvas   = imagecreatetruecolor($bcWidth, $bcHeight + 20);
-        $bgColor  = imagecolorallocate($canvas, 255, 255, 255);
-        imagefilledrectangle($canvas, 0, 0, $bcWidth, $bcHeight + 20, $bgColor);
-        imagecopyresampled($canvas, $barcode, 0, 0, 0, 0, $bcWidth, $bcHeight, $bcWidth, $bcHeight);
-        imagedestroy($barcode);
 
+        $whiteBG = imagecreatetruecolor(20, 20);
+        $bgColor = imagecolorallocate($whiteBG, 255, 255, 255);
+        imagefilledrectangle(
+            $whiteBG,
+            0,
+            0,
+            20,
+            20,
+            $bgColor
+        );
+        imagecopyresampled(
+            $barcode,
+            $whiteBG,
+            5,
+            $bcHeight - 8,
+            0,
+            0,
+            $bcWidth - 10,
+            20,
+            20,
+            20
+        );
+
+        // Canvas for new (final) image
+        $canvas   = imagecreatetruecolor($bcWidth + 20, $bcHeight + 16);
+        $bgColor  = imagecolorallocate($canvas, 255, 255, 255);
+        imagefilledrectangle($canvas, 0, 0, $bcWidth + 20, $bcHeight + 16, $bgColor);
+        imagecopyresampled(
+            $canvas,
+            $barcode,
+            10,
+            0,
+            0,
+            0,
+            $bcWidth,
+            $bcHeight,
+            $bcWidth,
+            $bcHeight
+        );
+
+        imagettftext(
+            $canvas,
+            8,
+            0,
+            2,
+            $bcHeight + 8,
+            imagecolorallocate($barcode, 10, 10, 10),
+            'resources/RobotoMono-SemiBold.ttf',
+            (string) substr((string) $this->number, 0, 1)
+        );
         imagettftext(
             $canvas,
             11,
             0,
-            (int) ($bcWidth * 0.25),
-            $bcHeight + 16,
-            imagecolorallocate($canvas, 10, 10, 10),
+            17,
+            $bcHeight + 8,
+            imagecolorallocate($barcode, 10, 10, 10),
             'resources/RobotoMono-SemiBold.ttf',
-            (string) $this->number
+            substr((string) $this->number, 1, -1)
         );
+        imagettftext(
+            $canvas,
+            8,
+            0,
+            $bcWidth + 12,
+            $bcHeight + 8,
+            imagecolorallocate($barcode, 10, 10, 10),
+            'resources/RobotoMono-SemiBold.ttf',
+            (string) substr((string) $this->number, -1)
+        );
+        imagedestroy($barcode);
         imagejpeg($canvas, $filename . ".jpg", 100);
     }
 
     /**
-     * Create a GTIN number (object) from a int or string
+     * Create a GTIN12 number (object) from a int or string
      *
      * @param int    $number         Number
      * @param string $companyPrefix  Client Code or Id
@@ -174,13 +177,15 @@ class Gtin
      *
      * @return \Sglms\Gtin\Gtin
      **/
-    public static function create(
-        int $number,
-        ?string $companyPrefix = null,
-        int $packagingLevel = 1
+    final public static function create(
+        int     $number,
+        ?string $companyPrefix  = "1",
+        int     $packagingLevel = null
     ): \Sglms\Gs1Gtin\Gtin {
         $gtin             = new self($number, $companyPrefix, $packagingLevel);
         $gtin->checkDigit = $gtin->getCheckDigit();
         return $gtin;
     }
 }
+
+class_alias("\Sglms\Gs1Gtin\Gtin12", "UPCA");

@@ -35,6 +35,33 @@ echo "<img src='barcode.jpg' />";
 
 ![barcode](resources/gtin.jpg "Generated barcode")
 
+### GTIN-2 (UPC-A)
+
+Generate GTIN-12 (company number + item number + check digit):
+
+```php
+use Sglms\Gs1Gtin\Gtin12;
+
+$gtin12 = Gtin12::create(1, 614141);    // Item Reference + Client Prefix
+// GTIN-12: 614141000012
+```
+
+```php
+// Display barcode
+echo "<img src='" . $gtin12->getBarcodeSource() . "' />";
+```
+
+![barcode](resources/gtin12.png "Generated barcode")
+
+```php
+// Save barcode
+echo $gtin12->saveBarcode('barcode');
+echo "<img src='barcode.jpg' />";
+```
+
+![barcode](resources/gtin12.jpg "Generated barcode")
+
+
 ### GS1
 
 ```php
@@ -82,3 +109,5 @@ enum Gs1Code: string
 }
 ```
 
+# Credits
+Bar code generator (images) : [picqer/php-barcode-generator](https://github.com/picqer/php-barcode-generator).
