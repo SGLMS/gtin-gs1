@@ -94,14 +94,14 @@ class Gtin12 extends Gtin
         $bcWidth  = imagesx($barcode);
         $bcHeight = imagesy($barcode);
 
-        $whiteBG = imagecreatetruecolor(20, 20);
+        $whiteBG = imagecreatetruecolor(10, 10);
         $bgColor = imagecolorallocate($whiteBG, 255, 255, 255);
         imagefilledrectangle(
             $whiteBG,
             0,
             0,
-            20,
-            20,
+            10,
+            10,
             $bgColor
         );
         imagecopyresampled(
@@ -111,10 +111,23 @@ class Gtin12 extends Gtin
             $bcHeight - 8,
             0,
             0,
-            $bcWidth - 10,
-            20,
-            20,
-            20
+            (int) ($bcWidth / 2  - 6),
+            10,
+            10,
+            10
+        );
+
+        imagecopyresampled(
+            $barcode,
+            $whiteBG,
+            (int) ($bcWidth / 2  + 5),
+            $bcHeight - 8,
+            0,
+            0,
+            (int) ($bcWidth / 2  - 9),
+            10,
+            10,
+            10
         );
 
         // Canvas for new (final) image
@@ -138,7 +151,7 @@ class Gtin12 extends Gtin
             $canvas,
             8,
             0,
-            2,
+            0,
             $bcHeight + 8,
             imagecolorallocate($barcode, 10, 10, 10),
             'resources/RobotoMono-SemiBold.ttf',
@@ -146,13 +159,23 @@ class Gtin12 extends Gtin
         );
         imagettftext(
             $canvas,
-            11,
+            10,
             0,
             17,
             $bcHeight + 8,
             imagecolorallocate($barcode, 10, 10, 10),
             'resources/RobotoMono-SemiBold.ttf',
-            substr((string) $this->number, 1, -1)
+            substr((string) $this->number, 1, 5)
+        );
+        imagettftext(
+            $canvas,
+            10,
+            0,
+            66,
+            $bcHeight + 8,
+            imagecolorallocate($barcode, 10, 10, 10),
+            'resources/RobotoMono-SemiBold.ttf',
+            substr((string) $this->number, 6, 5)
         );
         imagettftext(
             $canvas,
