@@ -20,7 +20,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\BarcodeGeneratorJPG;
 
 /**
- * GS1 Codes Enumerate
+ * Class: Gtin
  *
  * @category SGLMS_Library
  * @package  GS1GTIN
@@ -131,7 +131,7 @@ class Gtin
      *
      * @return string
      **/
-    final public function saveBarcode(string $filename, int $sep = 2, int $height = 36): void
+    public function saveBarcode(string $filename, int $sep = 2, int $height = 36): void
     {
         $generator  = new BarcodeGeneratorJPG();
         \file_put_contents(
@@ -159,7 +159,7 @@ class Gtin
             (int) ($bcWidth * 0.25),
             $bcHeight + 16,
             imagecolorallocate($canvas, 10, 10, 10),
-            'resources/Montserrat-SemiBold.ttf',
+            'resources/RobotoMono-SemiBold.ttf',
             (string) $this->number
         );
         imagejpeg($canvas, $filename . ".jpg", 100);
@@ -174,12 +174,12 @@ class Gtin
      *
      * @return \Sglms\Gtin\Gtin
      **/
-    final public static function create(
+    public static function create(
         int $number,
         ?string $companyPrefix = null,
         int $packagingLevel = 1
     ): \Sglms\Gs1Gtin\Gtin {
-        $gtin                   = new self($number, $companyPrefix, $packagingLevel);
+        $gtin             = new self($number, $companyPrefix, $packagingLevel);
         $gtin->checkDigit = $gtin->getCheckDigit();
         return $gtin;
     }

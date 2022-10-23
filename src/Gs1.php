@@ -146,17 +146,28 @@ class Gs1
         $canvas   = imagecreatetruecolor($bcWidth, $bcHeight + 20);
         $bgColor  = imagecolorallocate($canvas, 255, 255, 255);
         imagefilledrectangle($canvas, 0, 0, $bcWidth, $bcHeight + 20, $bgColor);
-        imagecopyresampled($canvas, $barcode, 0, 0, 0, 0, $bcWidth, $bcHeight, $bcWidth, $bcHeight);
+        imagecopyresampled(
+            $canvas,
+            $barcode,
+            0,
+            0,
+            0,
+            0,
+            $bcWidth,
+            $bcHeight,
+            $bcWidth,
+            $bcHeight
+        );
         imagedestroy($barcode);
 
         imagettftext(
             $canvas,
             11,
             0,
-            (int) ($bcWidth * 0.12),
+            (int) ($bcWidth * 0.025),
             $bcHeight + 16,
             imagecolorallocate($canvas, 10, 10, 10),
-            'resources/Montserrat-SemiBold.ttf',
+            'resources/RobotoMono-SemiBold.ttf',
             (string) $this->gs1
         );
         imagejpeg($canvas, $filename . ".jpg", 100);
