@@ -65,13 +65,13 @@ class Gtin extends GtinAbstract
         return $this;
     }
 
-
     /**
      * Create a GTIN number (object) from a int or string
      *
      * @param int    $itemNumber     Number
      * @param string $companyPrefix  Client Code or Id
-     * @param string $packagingLevel Packaging Level (Indicator according to GS1 Standards)
+     * @param string $type           [Ex. GTIN-14]
+     * @param int    $packagingLevel Packaging Level (Indicator according to GS1 Standards)
      *
      * @return \Sglms\Gtin\Gtin
      **/

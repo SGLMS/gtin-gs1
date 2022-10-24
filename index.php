@@ -12,6 +12,7 @@
  **/
 
 use Sglms\Gs1Gtin\Gtin;
+use Sglms\Gs1Gtin\Gtin8;
 use Sglms\Gs1Gtin\Gtin12;
 use Sglms\Gs1Gtin\Gs1;
 
@@ -22,12 +23,12 @@ require_once 'vendor/autoload.php';
     <body>
         <h1>GTIN-14</h1>
         <?php
-        $gtin = Gtin::create(44444);    // Item Reference
+        $gtin = Gtin::create(45678);    // Item Reference
         echo $gtin->number;
         echo "<img src='" . $gtin->getBarcodeSource() . "' />";
         echo "<hr/>";
 
-        $gtin = Gtin::create(456789, 123);    // Item Reference + Client Prefix
+        $gtin = Gtin::create(45678, 123);    // Item Reference + Client Prefix
         echo $gtin->number;
         echo "<img src='" . $gtin->getBarcodeSource() . "' />";
         echo "<hr/>";
@@ -41,16 +42,16 @@ require_once 'vendor/autoload.php';
         Validate : <br/>
 
         <code>
-        Gtin::validate(11230004567896, 'GTIN-14'); # TRUE
+        Gtin::validate(11230000456781, 'GTIN-14'); # TRUE
         </code>
 
         <?php
-        var_dump(Gtin::validate(11230004567896));
+        var_dump(Gtin::validate(11230000456781));
         ?>
 
         <h1>GTIN-12 / UPC-A</h1>
         <?php
-        $gtin12 = Gtin12::create(456789, 123);    // Item Reference + Client Prefix
+        $gtin12 = Gtin12::create(1, 61414);    // Item Reference + Client Prefix
         echo $gtin12->number;
         echo "<img src='" . $gtin12->getBarcodeSource(1, 64) . "' />";
         echo "<hr/>";
@@ -76,6 +77,19 @@ require_once 'vendor/autoload.php';
 
         <?php
         var_dump(Gtin::validate(123004567895, 'GTIN-12'));
+        ?>
+
+        <h1>GTIN-8</h1>
+        <?php
+        $gtin8 = Gtin8::create(890, 5067);    // Item Reference + Client Prefix
+        echo $gtin8->number;
+        echo "<img src='" . $gtin8->getBarcodeSource(2, 64) . "' />";
+        echo "<hr/>";
+
+        $gtin8->saveWithNumber('resources/gtin8');
+        echo "<img src='resources/gtin8.jpg' />";
+        echo "<hr/>";
+
         ?>
 
         <h1>GS1-128</h1>

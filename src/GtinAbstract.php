@@ -72,7 +72,7 @@ abstract class GtinAbstract
      *
      * @param int    $itemNumber    Number
      * @param string $companyPrefix Client Code or Id
-     * @param string $type          [Ex. GTIN-14, etc.]
+     * @param string $type          [Ex. GTIN-12, etc.]
      *
      * @return \Sglms\Gtin\Gtin
      **/
@@ -178,7 +178,9 @@ abstract class GtinAbstract
             'EAN-14'  => 12,
             'ITF-14'  => 12,
             'GTIN-12' => 11,
-            'UPC-A'   => 11
+            'UPC-A'   => 11,
+            'GTIN-8'  => 7,
+            'EAN-8'   => 7,
         };
     }
 
