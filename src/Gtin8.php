@@ -28,7 +28,7 @@ use Picqer\Barcode\BarcodeGeneratorJPG;
  * @license  MIT (https://sglms.com/license)
  * @link     https://sglms.com
  **/
-class Gtin12 extends GtinAbstract
+class Gtin8 extends GtinAbstract
 {
 
     /**
@@ -43,7 +43,7 @@ class Gtin12 extends GtinAbstract
     public static function create(
         int     $itemNumber,
         ?string $companyPrefix  = null,
-        string  $type = 'GTIN-12'
+        string  $type = 'GTIN-8'
     ): \Sglms\Gs1Gtin\GtinAbstract {
         $gtin             = new self($itemNumber, $companyPrefix, $type);
         return $gtin;
@@ -60,8 +60,8 @@ class Gtin12 extends GtinAbstract
      **/
     public function saveWithNumber(
         string $filename = "name",
-        int $sep         = 2,
-        int $height      = 36
+        int $sep         = 1,
+        int $height      = 56
     ): void {
         $generator = $this->saveBarcode($filename, $sep, $height);
         $barcode   = imagecreatefromjpeg($filename . ".jpg");
@@ -123,47 +123,27 @@ class Gtin12 extends GtinAbstract
 
         imagettftext(
             $canvas,
-            8,
+            10,
             0,
-            0,
-            $bcHeight + 5,
+            16,
+            $bcHeight + 6,
             imagecolorallocate($barcode, 10, 10, 10),
             'resources/RobotoMono-SemiBold.ttf',
-            (string) substr((string) $this->number, 0, 1)
+            substr((string) $this->number, 0, 4)
         );
         imagettftext(
             $canvas,
             10,
             0,
-            17,
-            $bcHeight + 5,
+            53,
+            $bcHeight + 6,
             imagecolorallocate($barcode, 10, 10, 10),
             'resources/RobotoMono-SemiBold.ttf',
-            substr((string) $this->number, 1, 5)
-        );
-        imagettftext(
-            $canvas,
-            10,
-            0,
-            66,
-            $bcHeight + 5,
-            imagecolorallocate($barcode, 10, 10, 10),
-            'resources/RobotoMono-SemiBold.ttf',
-            substr((string) $this->number, 6, 5)
-        );
-        imagettftext(
-            $canvas,
-            8,
-            0,
-            $bcWidth + 12,
-            $bcHeight + 5,
-            imagecolorallocate($barcode, 10, 10, 10),
-            'resources/RobotoMono-SemiBold.ttf',
-            (string) substr((string) $this->number, -1)
+            substr((string) $this->number, 4, 4)
         );
         imagedestroy($barcode);
         imagejpeg($canvas, $filename . ".jpg", 100);
     }
 }
 
-class_alias("\Sglms\Gs1Gtin\Gtin12", "UPCA");
+class_alias("\Sglms\Gs1Gtin\Gtin8", "EAN8");

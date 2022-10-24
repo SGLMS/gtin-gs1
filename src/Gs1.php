@@ -30,15 +30,15 @@ use Picqer\Barcode\BarcodeGeneratorJPG;
  **/
 class Gs1
 {
-    public string    $gs1;
-    public array     $gs1Array;
-    public int       $gtin;
-    public int       $units;
-    public int|float $netWeight;
-    public int|float $grossWeight;
-    public int       $batch;
-    public \DateTime $productionDate;
-    public \DateTime $expirationDate;
+    public string     $gs1;
+    public array      $gs1Array;
+    public int|string $gtin;
+    public int        $units;
+    public int|float  $netWeight;
+    public int|float  $grossWeight;
+    public int        $batch;
+    public \DateTime  $productionDate;
+    public \DateTime  $expirationDate;
 
     /**
      * Constructor
