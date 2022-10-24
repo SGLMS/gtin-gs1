@@ -6,9 +6,9 @@ We use these for our own projects, in particular for our own [SGLMS/label-printe
 
 ## Usage
 
-### GTIN
+### GTIN (GTIN-14)
 
-Generate GTIN-14 (prefix + company number + item number + check digit):
+Generate GTIN-14 (prefix + company number + item reference + check digit):
 
 ```php
 use Sglms\Gs1Gtin\Gtin;
@@ -38,25 +38,24 @@ echo "<img src='path/barcode.jpg' />";
 
 For now, only JPG images are supported, but will add other standards as needed (by our rojects).
 
+#### Validate
+
+```
+Gtin::validate(11230000456781); # TRUE
+```
+
 
 
 ### GTIN-12 (UPC-A)
 
-Generate GTIN-12 (company number + item number + check digit):
+Generate GTIN-12 (company number + item reference + check digit):
 
 ```php
 use Sglms\Gs1Gtin\Gtin12;
 
 $gtin12 = Gtin12::create(1, 614141);    // Item Reference + Client Prefix
-// GTIN-12: 614141000012
+// GTIN-12: 614141000013
 ```
-
-```php
-// Display barcode
-echo "<img src='" . $gtin12->getBarcodeSource() . "' />";
-```
-
-![barcode](resources/gtin12.png "Generated barcode")
 
 ```php
 // Save barcode
@@ -66,6 +65,24 @@ echo "<img src='path/barcode.jpg' />";
 
 ![barcode](resources/gtin12.jpg "Generated barcode")
 
+### GTIN-8 (EAN-8)
+
+Generate GTIN-8 (company number + item reference + check digit):
+
+```php
+use Sglms\Gs1Gtin\Gtin8;
+
+$gtin8 = Gtin8::create(890, 5067);    // Item Reference + Client Prefix
+// GTIN-8: 50678907
+```
+
+```php
+// Save barcode
+echo $gtin8->saveBarcode('path/barcode');
+echo "<img src='path/barcode.jpg' />";
+```
+
+![barcode](resources/gtin8.jpg "Generated barcode")
 
 ### GS1
 
