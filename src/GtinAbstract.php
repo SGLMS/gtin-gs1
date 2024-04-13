@@ -241,7 +241,7 @@ abstract class GtinAbstract
             (int) ($bcWidth * 0.25),
             $bcHeight + 16,
             imagecolorallocate($canvas, 10, 10, 10),
-            'resources/RobotoMono-SemiBold.ttf',
+            'fonts/RobotoMono-SemiBold.ttf',
             (string) $this->number
         );
         imagejpeg($canvas, $filename . ".jpg", 100);

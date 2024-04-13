@@ -81,7 +81,7 @@ class Gtin extends GtinAbstract
         string  $type = 'GTIN-14',
         int     $packagingLevel = 1
     ): \Sglms\Gs1Gtin\GtinAbstract {
-        $gtin             = new self($itemNumber, $companyPrefix, $packagingLevel);
+        $gtin = new self($itemNumber, $companyPrefix, $packagingLevel);
         return $gtin;
     }
 }
