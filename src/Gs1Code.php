@@ -29,6 +29,7 @@ enum Gs1Code: string
     case BatchNumber    = '10';
     case ProductionDate = '11'; // n2+n6
     case PaymentDate    = '12'; // n2+n6
+    case PackagingDate  = '13'; // n2+n6
     case BestBeforeDate = '15'; // n2+n6
     case ExpirationDate = '17'; // n2+n6
     case SerialNumber   = '21';
