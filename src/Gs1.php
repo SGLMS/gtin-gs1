@@ -36,6 +36,7 @@ class Gs1
     public int        $units;
     public int|float  $netWeight;
     public int|float  $grossWeight;
+    public int|float  $serialNumber;
     public int        $batch;
     public \DateTime  $productionDate;
     public \DateTime  $expirationDate;
@@ -74,6 +75,9 @@ class Gs1
                             break;
                         case Gs1Code::BatchNumber:
                             $this->batch = (int) $gs1Array[$index + 1];
+                            break;
+                        case Gs1Code::SerialNumber:
+                            $this->serialNumber = (int) $gs1Array[$index + 1];
                             break;
                         case Gs1Code::ProductionDate:
                             $this->productionDate = \DateTime::createFromFormat("ymd", $gs1Array[$index + 1]);
