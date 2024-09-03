@@ -36,7 +36,7 @@ class Gs1
     public int        $units;
     public int|float  $netWeight;
     public int|float  $grossWeight;
-    public int|float  $serialNumber;
+    public ?int       $serialNumber;
     public int        $batch;
     public \DateTime  $productionDate;
     public \DateTime  $expirationDate;
