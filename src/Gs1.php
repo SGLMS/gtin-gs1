@@ -30,15 +30,16 @@ use Picqer\Barcode\BarcodeGeneratorJPG;
  **/
 class Gs1
 {
-    public string     $gs1;
-    public array      $gs1Array;
-    public int|string $gtin;
-    public int        $units;
-    public int|float  $netWeight;
-    public int|float  $grossWeight;
-    public int        $batch;
-    public \DateTime  $productionDate;
-    public \DateTime  $expirationDate;
+    public string       $gs1;
+    public array        $gs1Array;
+    public int|string   $gtin;
+    public int          $units;
+    public int|float    $netWeight;
+    public int|float    $grossWeight;
+    public ?int         $serialNumber = null;
+    public ?int         $batch = null;
+    public ?\DateTime   $productionDate = null;
+    public ?\DateTime   $expirationDate = null;
 
     /**
      * Constructor
@@ -74,6 +75,9 @@ class Gs1
                             break;
                         case Gs1Code::BatchNumber:
                             $this->batch = (int) $gs1Array[$index + 1];
+                            break;
+                        case Gs1Code::SerialNumber:
+                            $this->serialNumber = (int) $gs1Array[$index + 1];
                             break;
                         case Gs1Code::ProductionDate:
                             $this->productionDate = \DateTime::createFromFormat("ymd", $gs1Array[$index + 1]);
