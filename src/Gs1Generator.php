@@ -189,10 +189,11 @@ class Gs1Generator
     ) {
         $image = '<img src="'.$this->getBarcodeSource(height: $height, codes: $codes).'" style="margin: auto;"/>';
         if ($numbers) {
-            $image = "<span class='text-center'>"
-            . $image
-            . "<p style='text-align:center;'>" . $this->get($codes) . "</p>"
-            . "<span>";
+            $image = <<<EOT
+                <span class='text-center'>{$image}
+                <p style='text-align:center;'>{$this->get($codes)}</p>
+                <span>
+            EOT;
         }
         return $image;
     }
