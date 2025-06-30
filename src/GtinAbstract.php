@@ -18,6 +18,11 @@ namespace Sglms\Gs1Gtin;
 
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\BarcodeGeneratorJPG;
+use Picqer\Barcode\Renderers\HtmlRenderer;
+use Picqer\Barcode\Renderers\JpgRenderer;
+use Picqer\Barcode\Renderers\PngRenderer;
+use Picqer\Barcode\Renderers\SvgRenderer;
+use Picqer\Barcode\Types\TypeCode128;
 
 /**
  * Class: GtinInterface
@@ -46,8 +51,11 @@ abstract class GtinAbstract
         return (string) $this->number;
     }
 
-    public function __construct(?int $itemNumber, ?string $companyPrefix = null, string $type = 'GTIN-12')
-    {
+    public function __construct(
+        ?int $itemNumber,
+        ?string $companyPrefix = null,
+        string $type = 'GTIN-12'
+    ) {
         if (strlen((string) $companyPrefix . (string) $itemNumber) > self::getMaxDigits($type)) {
             if (self::validate((string) $companyPrefix . (string) $itemNumber, $type)) {
                 $this->companyItemNumber = substr((string) $companyPrefix . (string) $itemNumber, 0, -1);
@@ -139,6 +147,37 @@ abstract class GtinAbstract
         return 10 == $cd ? 0 : $cd;
     }
 
+    public function getBarcode()
+    {
+        return $barcode = (new TypeCode128())->getBarcode($this->number);
+    }
+
+    public function renderBarcode(?string $format = 'svg', ?int $height = 50)
+    {
+        $barcode = $this->getBarcode();
+        switch ($format) {
+            case 'png':
+                $renderer = new PngRenderer();
+                $renderer->setBackgroundColor([255, 255, 255]);
+                break;
+
+            case 'jpg':
+                $renderer = new JpgRenderer();
+                $renderer->setBackgroundColor([255, 255, 255]);
+                break;
+
+            case 'html':
+                $renderer = new HtmlRenderer();
+                break;
+
+            default:
+                $renderer = new SvgRenderer();
+                $renderer->setBackgroundColor([255, 255, 255]);
+                break;
+        }
+        return $renderer->render($barcode, $barcode->getWidth(), $height);
+    }
+
     /**
      * Get (base64) barcode image source.
      *
@@ -147,16 +186,12 @@ abstract class GtinAbstract
      *
      * @return string
      **/
-    public function getBarcodeSource(int $sep = 2, int $height = 36): string
+    public function getBarcodeSource(?int $height = 50): string
     {
-        $generator  = new BarcodeGeneratorPNG();
+        $barcode = (new TypeCode128())->getBarcode($this->number);
+        $renderer = new PngRenderer();
         return "data:image/png;base64," . base64_encode(
-            $generator->getBarcode(
-                $this->number,
-                $generator::TYPE_CODE_128,
-                $sep,
-                $height
-            )
+            $renderer->render($barcode, $barcode->getWidth(), $height)
         );
     }
 
@@ -198,15 +233,17 @@ abstract class GtinAbstract
         int    $sep      = 2,
         int    $height   = 36
     ): void {
+        $barcode = (new TypeCode128())->getBarcode($this->number);
+        $renderer = new JpgRenderer();
+        $renderer->setBackgroundColor([255, 255, 255]);
         $generator  = new BarcodeGeneratorJPG();
         \file_put_contents(
             $filename . ".jpg",
-            $generator->getBarcode(
-                $this->number,
-                $generator::TYPE_CODE_128,
-                $sep,
-                $height
-            )
+            $renderer->render(
+                $barcode,
+                $barcode->getWidth(),
+                50
+            ),
         );
     }
 

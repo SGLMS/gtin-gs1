@@ -4,25 +4,25 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9bbe44f2c1ba1bfc9c16d200b274e9ea",
+    "content-hash": "705b73e44a669a987b6c0b283ab2ec45",
     "packages": [
         {
             "name": "picqer/php-barcode-generator",
-            "version": "v2.4.2",
+            "version": "v3.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/picqer/php-barcode-generator.git",
-                "reference": "e9d39681f617705492b609fc3fc58465ef88e8fd"
+                "reference": "a1d1e687c4a758be759383a709b6205e445091ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/picqer/php-barcode-generator/zipball/e9d39681f617705492b609fc3fc58465ef88e8fd",
-                "reference": "e9d39681f617705492b609fc3fc58465ef88e8fd",
+                "url": "https://api.github.com/repos/picqer/php-barcode-generator/zipball/a1d1e687c4a758be759383a709b6205e445091ec",
+                "reference": "a1d1e687c4a758be759383a709b6205e445091ec",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
-                "php": "^8.1"
+                "php": "^8.2"
             },
             "require-dev": {
                 "phpstan/phpstan": "^1.10",
@@ -45,14 +45,14 @@
             ],
             "authors": [
                 {
-                    "name": "Nicola Asuni",
-                    "email": "info@tecnick.com",
-                    "homepage": "http://nicolaasuni.tecnick.com"
-                },
-                {
                     "name": "Casper Bakker",
                     "email": "info@picqer.com",
                     "homepage": "https://picqer.com"
+                },
+                {
+                    "name": "Nicola Asuni",
+                    "email": "info@tecnick.com",
+                    "homepage": "http://nicolaasuni.tecnick.com"
                 }
             ],
             "description": "An easy to use, non-bloated, barcode generator in PHP. Creates SVG, PNG, JPG and HTML images from the most used 1D barcode standards.",
@@ -83,15 +83,9 @@
             ],
             "support": {
                 "issues": "https://github.com/picqer/php-barcode-generator/issues",
-                "source": "https://github.com/picqer/php-barcode-generator/tree/v2.4.2"
+                "source": "https://github.com/picqer/php-barcode-generator/tree/v3.2.2"
             },
-            "funding": [
-                {
-                    "url": "https://github.com/casperbakker",
-                    "type": "github"
-                }
-            ],
-            "time": "2024-09-18T08:09:33+00:00"
+            "time": "2025-06-03T09:09:33+00:00"
         }
     ],
     "packages-dev": [],

@@ -41,8 +41,11 @@ class Gtin extends GtinAbstract
      *
      * @return void
      **/
-    public function __construct(?int $itemNumber, ?string $companyPrefix = null, ?int $indicator = 0)
-    {
+    public function __construct(
+        ?int $itemNumber,
+        ?string $companyPrefix = null,
+        ?int $indicator = 0
+    ) {
         if (strlen((string) $companyPrefix . (string) $itemNumber) > self::getMaxDigits()) {
             if (self::validate((string) $companyPrefix . (string) $itemNumber)) {
                 $this->companyItemNumber = substr((string) $companyPrefix . (string) $itemNumber, 0, -1);

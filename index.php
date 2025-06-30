@@ -15,116 +15,159 @@ use Sglms\Gs1Gtin\Gtin;
 use Sglms\Gs1Gtin\Gtin8;
 use Sglms\Gs1Gtin\Gtin12;
 use Sglms\Gs1Gtin\Gs1;
-use Sglms\Gs1Gtin\Gs1Generator;
 
 require_once 'vendor/autoload.php';
 
 ?>
 <html>
     <body>
+        <?php
+        ?>
+
         <div style="display: flex; flex-direction:column;">
-        <h1>GTIN-14</h1>
-        <?php
-        $gtin = Gtin::create(45678);    // Item Reference
-        echo $gtin->number;
-        echo "<img src='" . $gtin->getBarcodeSource() . "' style='max-width:200px;' />";
-        echo "<hr/>";
+            <h1>GTIN-14</h1>
+            <?php
+            $gtin = Gtin::create(
+                itemNumber: 45678,
+                companyPrefix: 1234,
+                packagingLevel: 1,
+                type: 'GTIN-14'  
+            );
+            echo <<<'EOT'
+            <pre>
+            $gtin = Gtin::create(
+                itemNumber: 45678,
+                companyPrefix: 123456,
+                packagingLevel: 1,
+                type: 'GTIN-14'  
+            );
+            </pre>
+            EOT;
+            echo "<br/>GTIN-14 : " . $gtin->number;
+            echo "<br/>SVG: " . $gtin->renderBarcode(format:  'svg');
+            echo "<br/>HTML: " .$gtin->renderBarcode(format:  'html');
+            echo "<br/>PNG : <img src='data:image/png;base64," . base64_encode($gtin->renderBarcode('png')) . "' style='max-width:200px;' />";
+            echo "<br/>JPG : <img src='data:image/jpg;base64," . base64_encode($gtin->renderBarcode('jpg')) . "' style='max-width:200px;' />";
+            echo "<hr/>";
+            
+            $gtin = Gtin::validate(
+                number: 11230000456781,
+                type: 'GTIN-14'  
+            );  // TRUE
+            echo <<<'EOT'
+            <pre>
+            $gtin = Gtin::validate(
+                number: 11230000456781,
+                type: 'GTIN-14'  
+            );  // TRUE
+            </pre>
+            EOT;
+            var_dump($gtin);
 
-        $gtin = Gtin::create(45678, 123);    // Item Reference + Client Prefix
-        echo $gtin->number;
-        echo "<img src='" . $gtin->getBarcodeSource() . "' style='max-width:200px;' />";
-        echo "<hr/>";
-
-        $gtin->saveWithNumber('resources/gtin');
-        echo "<img src='resources/gtin.jpg' style='max-width:200px;' />";
-        echo "<hr/>";
-        ?>
-        <h2>Validation</h2>
-
-        Validate : <br/>
-
-        <code>
-        Gtin::validate(11230000456781, 'GTIN-14'); # TRUE
-        </code>
-
-        <?php
-        var_dump(Gtin::validate(11230000456781));
-        ?>
-        </div>
-
-        <h1>GTIN-12 / UPC-A</h1>
-        <?php
-        $gtin12 = Gtin12::create(1, 61414);    // Item Reference + Client Prefix
-        echo $gtin12->number;
-        echo "<br/>";
-        echo "<img src='" . $gtin12->getBarcodeSource(1, 64) . "' />";
-        echo "<hr/>";
-
-        $gtin12->saveWithNumber('resources/gtin12', 1, 64);
-        echo "<img src='resources/gtin12.jpg' />";
-        echo "<hr/>";
-
-        $upca = UPCA::create(111, 222);
-        $upca->saveWithNumber('resources/ufca', 1, 64);
-        echo "<img src='resources/ufca.jpg' />";
-        echo "<hr/>";
-
-        ?>
-
-        <h2>Validation</h2>
-
-        Validate : <br/>
-
-        <code>
-        Gtin::validate(123004567895, 'GTIN-12'); # TRUE
-        </code>
-
-        <?php
-        var_dump(Gtin::validate(123004567895, 'GTIN-12'));
-        ?>
-
-        <h1>GTIN-8</h1>
-        <?php
-        $gtin8 = Gtin8::create(890, 5067);    // Item Reference + Client Prefix
-        echo $gtin8->number;
-        echo "<img src='" . $gtin8->getBarcodeSource(2, 64) . "' />";
-        echo "<hr/>";
-
-        $gtin8->saveWithNumber('resources/gtin8');
-        echo "<img src='resources/gtin8.jpg' />";
-        echo "<hr/>";
-
+            echo "<h1>GTIN-12 / UPC-A</h1> ";
+            $upca = Gtin12::create(
+                itemNumber: 45678,
+                companyPrefix: 1234,
+            );
+            echo <<<'EOT'
+            <pre>
+            $upca = Gtin12::create(
+                itemNumber: 45678,
+                companyPrefix: 1234,
+            );
+            </pre>
+            EOT;
+            echo "UPC-A :" . $upca->number;
+            echo "<br/>SVG: " . $upca->renderBarcode(format:  'svg');
+            echo "<br/>HTML: " .$upca->renderBarcode(format:  'html');
+            
+            echo <<<'EOT'
+            <pre>
+            $upca->saveWithNumber('filaneme');  //JPG
+            </pre>
+            EOT;
+            $upca->saveWithNumber('resources/gtin');
+            echo "<img src='resources/gtin.jpg' style='width:140' />";
+            echo "<hr/>";
+        
+            // GTIN-8
+            echo "<h1>GTIN-8</h1> ";
+            $gtin8 = Gtin8::create(
+                itemNumber: 890,
+                companyPrefix: 123,
+            );
+            echo <<<'EOT'
+            <pre>
+            $gtin8 = Gtin8::create(
+                itemNumber: 890,
+                companyPrefix: 123,
+            );
+            </pre>
+            EOT;
+            echo "GTIN-8 :" . $gtin8->number;
+            echo "<br/>SVG: " . $gtin8->renderBarcode(format:  'svg');
+            echo "<br/>HTML: " .$gtin8->renderBarcode(format:  'html');
+            
+            echo <<<'EOT'
+            <pre>
+            $gtin8->saveWithNumber('filaneme');  //JPG
+            </pre>
+            EOT;
+            $gtin8->saveWithNumber('resources/gtin');
+            echo "<img src='resources/gtin.jpg' style='width:140' />";
+            echo "<hr/>";
+        
         ?>
 
         <h1>GS1-128</h1>
-        <div style="display:flex; flex-direction: column; align-items: center;">
-        <pre>GS1 Generator (new Gs1(array $array = [1 => 22334455667788]))</pre>
+        <h2>GS1 Generator</h2>
+        <div style="display:flex; flex-direction: column; align-items: start;">
         <?php
-        $gs1 = new Gs1Generator([
-            1  => 22334455667788,
-            10 => 123456,
-            11 => 250601,
-            17 => 270601,
-            37 => 20,
-            3102 => 123456,
-            3302 => 134567,
-            21 => 1234567890123,
-        ]);
-        echo $gs1;
-        echo "<img src='" . $gs1->getBarcodeSource(height:50, codes: [1,10,11,17,21,37,3102]) . "' />";
-        echo "<hr/>";
-        echo "<pre>GS1 Parser (Gs1::parse(string \$string))</pre>";
-        $gs1 = Gs1Generator::parse('(01)22334455667788(10)34567(3102)123456(3302)134567(37)100(11)220801(17)221231(21)123456789');
-        echo $gs1;
-        
-        echo "<img src='" . $gs1->getBarcodeSource(height:50, codes: [1,10,11,17,21,37,3102]) . "' />";
-        echo "<hr/>";
-        
-        $gs1->saveBarcode('resources/gs1');
-        
-        echo "<pre>GS1 Image Generator</pre>";
-        echo "<img src='resources/gs1.jpg' style='width: 500px;' />";
-        echo "<hr/>";
+            $gs1 = new Gs1([
+                1  => 22334455667788,
+                10 => 123456,
+                11 => 250601,
+                17 => 270601,
+                37 => 20,
+                3102 => 123456,
+                3302 => 134567,
+                21 => 1234567890123,
+            ]);
+            echo <<<'EOT'
+            <pre>
+            $gs1 = new Gs1([
+                1  => 22334455667788,
+                10 => 123456,
+                11 => 250601,
+                17 => 270601,
+                37 => 20,
+                3102 => 123456,
+                3302 => 134567,
+                21 => 1234567890123,
+            ]);
+            </pre>
+            EOT;
+            echo "<br/>GS1 : " . $gs1;
+            echo "<br/>PNG : " . $gs1->getBarcode(codes: [1,10,11,17,21,37,3102], height: 50, numbers: true);
+            echo "<br/><img src='" . $gs1->getBarcodeSource(height:50, codes: [1,10,11,17,21,37,3102]) . "' />";
+            
+            echo "<h2>GS1 Parser</h2>";
+            $gs1 = Gs1::parse('(01)22334455667788(10)34567(3102)123456(3302)134567(37)100(11)220801(17)221231(21)123456789');
+            echo <<<'EOT'
+            <pre>
+            $gs1 = Gs1::parse('(01)22334455667788(10)34567(3102)123456(3302)134567(37)100(11)220801(17)221231(21)123456789');
+            </pre>
+            EOT;
+            echo "GS1 :" . $gs1;
+            
+            echo "<br/><img src='" . $gs1->getBarcodeSource(height:50, codes: [1,10,11,17,21,37,3102]) . "' />";
+            echo "<hr/>";
+            
+            $gs1->saveBarcode('resources/gs1');
+            
+            echo "<pre>GS1 Image Generator</pre>";
+            echo "<img src='resources/gs1.jpg' style='width: 500px;' />";
+            echo "<hr/>";
         ?>
         <pre>
             <?php
