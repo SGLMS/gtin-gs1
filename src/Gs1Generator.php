@@ -141,6 +141,12 @@ class Gs1Generator
             $gs1->serial = (int) $matches[2];
             $string = str_replace($matches[0], "", $string);
         }
+        preg_match("/([\(]?37[\)]?)([0-9]{1,6})/", $string, $matches);
+        if ($matches) {
+            $gs1->pieces = (int) $matches[2];
+            $string = str_replace($matches[0], "", $string);
+        }
+        ksort($gs1->data);
         return $gs1;
     }
 

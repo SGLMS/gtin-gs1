@@ -22,20 +22,21 @@ require_once 'vendor/autoload.php';
 ?>
 <html>
     <body>
+        <div style="display: flex; flex-direction:column;">
         <h1>GTIN-14</h1>
         <?php
         $gtin = Gtin::create(45678);    // Item Reference
         echo $gtin->number;
-        echo "<img src='" . $gtin->getBarcodeSource() . "' />";
+        echo "<img src='" . $gtin->getBarcodeSource() . "' style='max-width:200px;' />";
         echo "<hr/>";
 
         $gtin = Gtin::create(45678, 123);    // Item Reference + Client Prefix
         echo $gtin->number;
-        echo "<img src='" . $gtin->getBarcodeSource() . "' />";
+        echo "<img src='" . $gtin->getBarcodeSource() . "' style='max-width:200px;' />";
         echo "<hr/>";
 
         $gtin->saveWithNumber('resources/gtin');
-        echo "<img src='resources/gtin.jpg' />";
+        echo "<img src='resources/gtin.jpg' style='max-width:200px;' />";
         echo "<hr/>";
         ?>
         <h2>Validation</h2>
@@ -49,11 +50,13 @@ require_once 'vendor/autoload.php';
         <?php
         var_dump(Gtin::validate(11230000456781));
         ?>
+        </div>
 
         <h1>GTIN-12 / UPC-A</h1>
         <?php
         $gtin12 = Gtin12::create(1, 61414);    // Item Reference + Client Prefix
         echo $gtin12->number;
+        echo "<br/>";
         echo "<img src='" . $gtin12->getBarcodeSource(1, 64) . "' />";
         echo "<hr/>";
 

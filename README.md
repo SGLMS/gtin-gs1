@@ -89,16 +89,22 @@ echo "<img src='path/barcode.jpg' />";
 ```php
 use Sglms\Gs1Gtin\Gs1;
 
-$gs1 = new Gs1('(01)1234(3102)123456(3302)134567(37)20(11)220801(17)221231');
-// object(Sglms\Gtin\Gs1)[3]
-// protected string 'gs1' => string '(01)1234(3102)123456(3302)134567(37)20(11)220801' (length=48)
-// public int 'gtin' => int 10000000012345
-// public int 'units' => int 20
-// public int|float 'netWeight' => float 1234.56
-// public int|float 'grossWeight' => float 1345.67
-// ...
-
+$gs1 = new Gs1([
+    1  	=> 22334455667788,
+    10 	=> 123456,
+    11 	=> 250601,
+    17 	=> 270601,
+    21 	=> 1234567890123,
+    37 	=> 20,
+    3102 	=> 123456,
+    3302 	=> 134567,
+]);
 echo "<img src='" . $gs1->getBarcodeSource() . "' />";
+```
+Or,
+
+```
+$gs1 = Gs1::parse('(01)1234(3102)123456(3302)134567(37)20(11)220801(17)221231');
 ```
 
 GS1-128: (01)1234(3102)123456(3302)134567(37)20(11)220801(17)221231
