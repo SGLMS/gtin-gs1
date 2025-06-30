@@ -31,7 +31,7 @@ use Picqer\Barcode\BarcodeGeneratorJPG;
 class Gs1Generator
 {
     public array $data;
-    public ?int $gs1;
+    public ?string $gs1;
     public ?string $sscc;          // 00
     public ?string $gtin;          // 01
     public ?string $content;       // 02
@@ -53,12 +53,12 @@ class Gs1Generator
     public function __construct(?array $data = [])
     {
         $this->data     = $data;
-        $this->gtin     = $data[1] ?? null;
+        $this->gtin     = (string) ($data[1] ?? null);
         $this->content  = $data[2] ?? null;
         $this->sscc     = $data[0] ?? null;
-        $this->expirationDate   = $data[10] ?? null;
+        $this->expirationDate   = $data[17] ?? null;
         $this->productionDate   = $data[11] ?? null;
-        $this->batch    = $data[17] ?? null;
+        $this->batch    = $data[10] ?? null;
         $this->serial   = $data[21] ?? null;
         $this->pieces   = $data[37] ?? null;
         $this->netWeight    = isset($data[3102]) ? (int) round($data[3102] * 100) : null;
@@ -94,46 +94,51 @@ class Gs1Generator
     public static function parse(string $string)
     {
         $gs1 = new self();
-        $gs1->gs1 = $string;
-        $matches = collect();
         preg_match("/^([\(]?01[\)]?)([0-9]{14})/", $string, $matches);
         if ($matches) {
-            $gs1->gtin = $matches[2];
+            $gs1->gtin = (string) $matches[2];
+            $gs1->data [1] = $gs1->gtin;
             $string = str_replace($matches[0], "", $string);
         }
         preg_match("/([\(]?3102[\)]?)([0-9]{6})/", $string, $weights);
         if ($weights) {
-            $gs1->netWeight = $weights[2] / 100;
+            $gs1->netWeight = (int) $weights[2];
+            $gs1->data [3102] = $gs1->netWeight;
             $string = str_replace($weights[0], "", $string);
         }
         preg_match("/([\(]?3302[\)]?)([0-9]{6})/", $string, $matches);
         if ($matches) {
-            $gs1->grossWeight = $matches[2] / 100;
+            $gs1->grossWeight = (int) $matches[2];
+            $gs1->data [3302] = $gs1->grossWeight;
             $string = str_replace($matches[0], "", $string);
         }
         preg_match("/([\(]?3201[\)]?)([0-9]{6})/", $string, $weights);  // Net weight in pounds; 1 decimal
         if ($weights) {
-            $gs1->netWeight = $weights[2] / 10 / 2.205;
+            $gs1->netWeight = (int) ($weights[2] / 10 / 2.205);
+            $gs1->data [3102] = $gs1->netWeight;
             $string = str_replace($weights[0], "", $string);
         }
         preg_match("/([\(]?11[\)]?)(\d{2}(?:0\d|1[0-2])(?:[0-2]\d|3[01]))/", $string, $matches);
         if ($matches) {
-            $gs1->productionDate = $matches[2];
+            $gs1->productionDate = (int) $matches[2];
+            $gs1->data [11] = $gs1->productionDate;
             $string = str_replace($matches[0], "", $string);
         }
         preg_match("/([\(]?17[\)]?)(\d{2}(?:0\d|1[0-2])(?:[0-2]\d|3[01]))/", $string, $matches);
         if ($matches) {
-            $gs1->expirationDate = $matches[2];
+            $gs1->expirationDate = (int) $matches[2];
+            $gs1->data [17] = $gs1->expirationDate;
             $string = str_replace($matches[0], "", $string);
         }
         preg_match("/([\(]?10[\)]?)([0-9]{1,20})/", $string, $matches);
         if ($matches) {
-            $gs1->batch = $matches[2];
+            $gs1->batch = (int) $matches[2];
+            $gs1->data [10] = $gs1->batch;
             $string = str_replace($matches[0], "", $string);
         }
         preg_match("/([\(]?21[\)]?)([0-9]{1,20})/", $string, $matches);
         if ($matches) {
-            $gs1->serial = $matches[2];
+            $gs1->serial = (int) $matches[2];
             $string = str_replace($matches[0], "", $string);
         }
         return $gs1;
@@ -207,13 +212,13 @@ class Gs1Generator
      *
      * @return string
      **/
-    final public function saveBarcode(string $filename, int $sep = 1, int $height = 36): void
+    final public function saveBarcode(string $filename, int $sep = 1, int $height = 50): void
     {
         $generator  = new BarcodeGeneratorJPG();
         \file_put_contents(
             $filename . ".jpg",
             $generator->getBarcode(
-                $this->gs1,
+                $this->get([1,10,21,37,3102]),
                 $generator::TYPE_CODE_128,
                 $sep,
                 $height
@@ -246,8 +251,8 @@ class Gs1Generator
             (int) ($bcWidth * 0.025),
             $bcHeight + 16,
             imagecolorallocate($canvas, 10, 10, 10),
-            'resources/RobotoMono-SemiBold.ttf',
-            (string) $this->gs1
+            'fonts/RobotoMono-SemiBold.ttf',
+            (string) $this->get([1,10,3102])
         );
         imagejpeg($canvas, $filename . ".jpg", 100);
     }

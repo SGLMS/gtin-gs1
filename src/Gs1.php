@@ -171,7 +171,7 @@ class Gs1
             (int) ($bcWidth * 0.025),
             $bcHeight + 16,
             imagecolorallocate($canvas, 10, 10, 10),
-            'resources/RobotoMono-SemiBold.ttf',
+            'fonts/RobotoMono-SemiBold.ttf',
             (string) $this->gs1
         );
         imagejpeg($canvas, $filename . ".jpg", 100);
