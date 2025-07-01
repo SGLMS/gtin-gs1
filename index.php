@@ -86,8 +86,8 @@ require_once 'vendor/autoload.php';
             $upca->saveWithNumber('filaneme');  //JPG
             </pre>
             EOT;
-            $upca->saveWithNumber('resources/gtin');
-            echo "<img src='resources/gtin.jpg' style='width:140' />";
+            $upca->saveWithNumber('resources/upca');
+            echo "<img src='resources/upca.jpg' style='width:140' />";
             echo "<hr/>";
         
             // GTIN-8
@@ -163,9 +163,15 @@ require_once 'vendor/autoload.php';
             echo "<br/><img src='" . $gs1->getBarcodeSource(height:50, codes: [1,10,11,17,21,37,3102]) . "' />";
             echo "<hr/>";
             
+            echo "<pre>GS1 Image Generator</pre>";
+            echo <<<'EOT'
+            <pre>
+            $gs1->getBarcode(height:50, codes: [1,10,11,17,21,37,3102])
+            $gs1->saveBarcode('resources/gs1');     // JPG
+            </pre>
+            EOT;
             $gs1->saveBarcode('resources/gs1');
             
-            echo "<pre>GS1 Image Generator</pre>";
             echo "<img src='resources/gs1.jpg' style='width: 500px;' />";
             echo "<hr/>";
         ?>
