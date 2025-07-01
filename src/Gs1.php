@@ -68,11 +68,19 @@ class Gs1
         $this->grossWeight  = isset($data[3302]) ? (int) round($data[3302] * 100) : null;
     }
 
-    public function get(?array $array = [1,21,17,3102])
-    {
+    /**
+     * Get GS1 filtered by codes.
+     *
+     * @param array|null $codes
+     *
+     * @return void
+     */
+    public function get(
+        ?array $codes = [1,21,17,3102]
+    ) {
         $filter = array_filter(
             $this->data,
-            fn ($v, $k) => in_array($k, $array),
+            fn ($v, $k) => in_array($k, $codes),
             ARRAY_FILTER_USE_BOTH
         );
         $array = array_map(
@@ -88,8 +96,16 @@ class Gs1
         return implode($array);
     }
 
-    public static function parse(string $string)
-    {
+    /**
+     * Parse GS1 String
+     *
+     * @param string $string
+     *
+     * @return void
+     */
+    public static function parse(
+        string $string
+    ) {
         $gs1 = new self();
         preg_match("/^([\(]?01[\)]?)([0-9]{14})/", $string, $matches);
         if ($matches) {
@@ -136,13 +152,15 @@ class Gs1
         preg_match("/([\(]?21[\)]?)([0-9]{1,20})/", $string, $matches);
         if ($matches) {
             $gs1->serial = (int) $matches[2];
-            $gs1->data [21] = $gs1->serial;;
+            $gs1->data [21] = $gs1->serial;
+            ;
             $string = str_replace($matches[0], "", $string);
         }
         preg_match("/([\(]?37[\)]?)([0-9]{1,4})/", $string, $matches);
         if ($matches) {
             $gs1->pieces = (int) $matches[2];
-            $gs1->data [37] = $gs1->pieces;;
+            $gs1->data [37] = $gs1->pieces;
+            ;
             $string = str_replace($matches[0], "", $string);
         }
         ksort($gs1->data);
@@ -177,10 +195,10 @@ class Gs1
      * @return string
      **/
     final public function getBarcodeSource(
-        int $height = 36,
+        int $height = 50,
         ?array $codes = [1,10,21,37,3102]
     ): string {
-        $barcode = (new TypeCode128())->getBarcode($this->get($codes));
+        $barcode = (new TypeCode128())->getBarcode((string) $this->get($codes));
         $renderer = new PngRenderer();
         $renderer->setBackgroundColor([255, 255, 255]);
         return "data:image/png;base64," . base64_encode(
