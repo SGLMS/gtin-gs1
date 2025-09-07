@@ -4,6 +4,12 @@ GS1-128 / GTIN (UPCA; EAN8; ITF14) creator and parser.  We use these for our pro
 
 In this version we have included Laravel Service Providers.
 
+## Installation
+
+```bash
+composer require sglms/gtin-gs1
+```
+
 ## Usage
 
 ### GTIN (GTIN-14)
