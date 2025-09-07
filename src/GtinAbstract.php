@@ -40,6 +40,8 @@ abstract class GtinAbstract
     protected string  $itemReference;
     public int        $checkDigit;
     public int|string $number;
+    public string     $type = 'GTIN-14';
+    public int        $packagingLevel = 1;  // Packing Level for GTIN-14
 
     /**
      * Display GTIN Number
@@ -52,23 +54,35 @@ abstract class GtinAbstract
     }
 
     public function __construct(
-        ?int $itemNumber,
+        int $itemNumber,
         ?string $companyPrefix = null,
-        string $type = 'GTIN-12'
+        ?string $type = 'GTIN-14',
+        ?int $packagingLevel = 1
     ) {
-        if (strlen((string) $companyPrefix . (string) $itemNumber) > self::getMaxDigits($type)) {
-            if (self::validate((string) $companyPrefix . (string) $itemNumber, $type)) {
+        $this->type = strtoupper($type);
+        $this->packagingLevel = $packagingLevel ?: 1;
+        if (strlen(
+            (string) $companyPrefix . (string) $itemNumber
+        ) > self::getMaxDigits($this->type)
+        ) {
+            if (self::validate(
+                (string) $companyPrefix
+                . (string) $itemNumber,
+                $this->type
+            )
+            ) {
                 $this->companyItemNumber = substr((string) $companyPrefix . (string) $itemNumber, 0, -1);
                 $this->checkDigit        = (int) substr((string) $companyPrefix . (string) $itemNumber, -1);
             } else {
                 throw new \ErrorException(_("Invalid Check Digit"));
             }
         } else {
-            $this->buildCompanyItemNumber($itemNumber, $companyPrefix, $type);
+            $this->buildCompanyItemNumber($itemNumber, $companyPrefix, $this->type);
             $this->checkDigit     = Gtin::calculateCheckDigit($this->companyItemNumber);
         }
 
         $this->number = (string) (
+            ($this->type == 'GTIN-14' ? (string) $packagingLevel : '') .
             (string) $this->companyItemNumber .
             (string) $this->checkDigit
         );
@@ -78,19 +92,26 @@ abstract class GtinAbstract
     /**
      * Create a GTIN number (object) from a int or string
      *
-     * @param int    $itemNumber    Number
-     * @param string $companyPrefix Client Code or Id
-     * @param string $type          [Ex. GTIN-12, etc.]
+     * @param int    $itemNumber     Number
+     * @param string $companyPrefix  Client Code or Id
+     * @param string $type           [Ex. GTIN-14]
+     * @param int    $packagingLevel Packaging Level (Indicator according to GS1 Standards)
      *
      * @return \Sglms\Gtin\Gtin
      **/
     public static function create(
         int     $itemNumber,
         ?string $companyPrefix = null,
-        string  $type          = 'GTIN-12'
+        ?string $type          = 'GTIN-14',
+        ?int    $packagingLevel = 1
     ): \Sglms\Gs1Gtin\GtinAbstract {
         $class = get_called_class();
-        $gtin  = new $class($itemNumber, $companyPrefix, $type = 'GTIN-12');
+        $gtin  = new $class(
+            $itemNumber,
+            $companyPrefix,
+            $type,
+            $packagingLevel
+        );
         return $gtin;
     }
 

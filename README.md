@@ -1,8 +1,8 @@
 # GS1 / GTIN
 
-Simple classes to handle GS1-128 / GTIN numbers and barcodes. Currentely we have GTIN-14 and GTIN-12 (UPC-A) barcodes generators and validators, but we'll add others (GTIN-13 / EAN and GTIN-8 / EAN-8).
+GS1-128 / GTIN (UPCA; EAN8; ITF14) creator and parser.  We use these for our projects, but you are welcome to use them.
 
-We use these for our own projects, in particular for our own [SGLMS/label-printer](https://github.com/SGLMS/label-printer). You are welcome to try them, or even better, contribute.
+In this version we have included Laravel Service Providers.
 
 ## Usage
 
@@ -13,11 +13,23 @@ Generate GTIN-14 (prefix + company number + item reference + check digit):
 ```php
 use Sglms\Gs1Gtin\Gtin;
 
-$gtin = Gtin::create(45678);    // Item Reference only!
-// GTIN: 10000000456781
+$gtin = Gtin::create(9876543210);
+// GTIN: 10098765432105
 
-$gtin = Gtin::create(45678, '0123');    // Item Reference + Client Prefix
-// GTIN: 10000123456781
+$gtin = Gtin::create(
+    itemNumber: 98765,
+    companyPrefix: '0123'
+);
+// GTIN: 10123000987659
+
+$gtin = Gtin::create(
+    itemNumber: 987654,
+    companyPrefix: '123',
+    type: 'GTIN-14',
+    packagingLevel: 2
+);
+// GTIN: 21230009876545
+
 ```
 #### Display (on-the-fly)
 ```php
@@ -40,7 +52,7 @@ For now, only JPG images are supported, but will add other standards as needed (
 
 #### Validate
 
-```
+```php
 Gtin::validate(11230000456781); # TRUE
 ```
 
@@ -53,13 +65,17 @@ Generate GTIN-12 (company number + item reference + check digit):
 ```php
 use Sglms\Gs1Gtin\Gtin12;
 
-$gtin12 = Gtin12::create(1, 614141);    // Item Reference + Client Prefix
-// GTIN-12: 614141000013
+$gtin = Gtin::create(
+    itemNumber: 1,
+    companyPrefix: '614141',
+    type: 'GTIN-12'
+);
+// GTIN: 614141000012
 ```
 
 ```php
 // Save barcode
-echo $gtin12->saveBarcode('path/barcode');
+echo $gtin->saveBarcode('path/barcode');
 echo "<img src='path/barcode.jpg' />";
 ```
 
@@ -72,13 +88,18 @@ Generate GTIN-8 (company number + item reference + check digit):
 ```php
 use Sglms\Gs1Gtin\Gtin8;
 
-$gtin8 = Gtin8::create(890, 5067);    // Item Reference + Client Prefix
-// GTIN-8: 50678907
+
+$gtin = Gtin::create(
+    itemNumber: 0,
+    companyPrefix: '506789',
+    type: 'GTIN-8'
+);
+// GTIN-8/EAN8: 50678907
 ```
 
 ```php
 // Save barcode
-echo $gtin8->saveBarcode('path/barcode');
+echo $gtin->saveBarcode('path/barcode');
 echo "<img src='path/barcode.jpg' />";
 ```
 
@@ -89,30 +110,45 @@ echo "<img src='path/barcode.jpg' />";
 ```php
 use Sglms\Gs1Gtin\Gs1;
 
-$gs1 = new Gs1([
-    1  	=> 22334455667788,
-    10 	=> 123456,
-    11 	=> 250601,
-    17 	=> 270601,
-    21 	=> 1234567890123,
-    37 	=> 20,
-    3102 	=> 123456,
-    3302 	=> 134567,
-]);
+$gs1 = Gs1::parse('(01)00012345678905(10)ABC123(3102)000500(3302)000700(17)250630(21)SN123456(37)10(11)230101');
+
+// Sglms\Gs1Gtin\Gs1 {
+//   +gs1: "(01)00012345678905(10)ABC123(3102)000500(3302)000700(17)250630(21)SN123456(37)10(11)230101"
+//   +sscc: null
+//   +gtin: "00012345678905"
+//   +content: null
+//   +netWeight: 5
+//   +grossWeight: 7
+//   +batch: "ABC123"
+//   +serial: "SN123456"
+//   +productionDate: "230101"
+//   +expirationDate: "250630"
+//   +pieces: 10
+// }
+
+$gs1 = Gs1::create(gtin: "00012345678904", batch: "ABC123");
+
+// Sglms\Gs1Gtin\Gs1 {
+//   +data: array:2 [▶]
+//   +gs1: "(01)00012345678905(10)ABC123"
+//   +sscc: null
+//   +gtin: "00012345678905"
+//   +content: ""
+//   +netWeight: null
+//   +grossWeight: null
+//   +batch: "ABC123"
+//   +serial: null
+//   +productionDate: null
+//   +expirationDate: null
+//   +pieces: null
+// }
+
 echo "<img src='" . $gs1->getBarcodeSource() . "' />";
 ```
-Or,
-
-```
-$gs1 = Gs1::parse('(01)1234(3102)123456(3302)134567(37)20(11)220801(17)221231');
-```
-
-GS1-128: (01)1234(3102)123456(3302)134567(37)20(11)220801(17)221231
 
 ![barcode](resources/gs1.png "Generated barcode")
 
-
-GS1 (generator) works only with GTIN-14; per standards recomendations.
+**Note**: GS1 works only with GTIN-14; per standards recommendations.
 
 ```php
 $gs1->saveBarcode('path/gs1');
@@ -129,6 +165,7 @@ GS1 Identifiers can be found [here](https://www.databar-barcode.info/application
 ```php
 enum Gs1Code: string
 {
+    case SSCC           = '00';
     case GTIN           = '01'; // n2+n14
     case Content        = '02'; // n2+n14
     case BatchNumber    = '10';

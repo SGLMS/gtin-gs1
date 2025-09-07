@@ -30,25 +30,6 @@ use Picqer\Barcode\BarcodeGeneratorJPG;
  **/
 class Gtin12 extends GtinAbstract
 {
-
-    /**
-     * Create a GTIN number (object) from a int or string
-     *
-     * @param int    $itemNumber    Number
-     * @param string $companyPrefix Client Code or Id
-     * @param string $type          GTIN-12
-     *
-     * @return \Sglms\Gtin\Gtin
-     **/
-    public static function create(
-        int     $itemNumber,
-        ?string $companyPrefix  = null,
-        string  $type = 'GTIN-12'
-    ): \Sglms\Gs1Gtin\GtinAbstract {
-        $gtin             = new self($itemNumber, $companyPrefix, $type);
-        return $gtin;
-    }
-
     /**
      * Save barcode image (PNG).
      *

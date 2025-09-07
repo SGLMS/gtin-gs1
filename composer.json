@@ -2,13 +2,14 @@
     "name": "sglms/gs1-gtin",
     "description": "Classes to create or validate GTIN (Global Trade Item Number)",
     "type": "library",
-    "license": "MIT",
+    "keywords": [
+        "gs1",
+        "gtin",
+        "laravel",
+        "sglms"
+    ],
     "homepage": "https://sglms.com",
-    "autoload": {
-        "psr-4": {
-            "Sglms\\Gs1Gtin\\": "src/"
-        }
-    },
+    "license": "MIT",
     "authors": [
         {
             "name": "James",
@@ -16,6 +17,27 @@
         }
     ],
     "require": {
+        "php": ">=8.3",
         "picqer/php-barcode-generator": "^3.2"
-    }
+    },
+    "require-dev": {
+        "laravel/framework": "^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sglms\\Gs1Gtin\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Sglms\\Gs1Gtin\\Gs1ServiceProvider"
+            ],
+            "aliases": {
+                "Gs1": "Sglms\\Gs1Gtin\\Facades\\Gs1"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

@@ -34,15 +34,15 @@ class Gs1
 {
     public array $data;
     public ?string $gs1;
-    public ?string $sscc;          // 00
-    public ?string $gtin;          // 01
-    public ?string $content;       // 02
+    public ?string $sscc;       // 00
+    public ?string $gtin;       // 01
+    public ?string $content;    // 02
     public ?int $netWeight;     // 3102 / 3201
     public ?int $grossWeight;   // 3302
-    public ?int $batch;         // 10
-    public ?int $serial;        // 21
-    public ?int $productionDate; // 11
-    public ?int $expirationDate; // 17
+    public ?string $batch;         // 10
+    public ?string $serial;        // 21
+    public ?string $productionDate; // 11
+    public ?string $expirationDate; // 17
     public ?int $pieces;        // 37
 
     /**
@@ -67,6 +67,50 @@ class Gs1
         $this->netWeight    = isset($data[3201]) ? $data [3201] / 0.45359237 : $this->netWeight;
         $this->grossWeight  = isset($data[3302]) ? (int) round($data[3302] * 100) : null;
     }
+
+    /**
+     * Create new GS1 instance
+     *
+     * @param array $data GS1 Array [Gs1Code => value]
+     *
+     * @return Gs1
+     */
+    public static function createFromArray($data = []): Gs1
+    {
+        return new self($data);
+    }
+
+    public static function create(
+        $gtin,
+        ?int $sscc = null,
+        ?string $content = null,
+        ?string $netWeight = null,
+        ?string $grossWeight = null,
+        ?string $batch = null,
+        ?string $serial = null,
+        ?string $productionDate = null,
+        ?string $expirationDate = null,
+        ?string $pieces = null,
+    ): Gs1 {
+        $content = !$content && !Gtin::validate($gtin) ? $gtin : null;
+        $gtin    = Gtin::validate($gtin) ? $gtin : null;
+        $gs1 = new self(array_filter([
+            0 => $sscc,
+            1 => $gtin,
+            2 => $content,
+            3102 => $netWeight,
+            3201 => $netWeight ? (string) round((float) $netWeight * 2.205, 1) : null,
+            3302 => $grossWeight,
+            10 => $batch,
+            21 => $serial,
+            11 => $productionDate,
+            17 => $expirationDate,
+            37 =>  (int) $pieces,
+        ]));
+        $gs1->gs1 = (string) $gs1;
+        return $gs1;
+    }
+
 
     /**
      * Get GS1 filtered by codes.
@@ -107,63 +151,68 @@ class Gs1
         string $string
     ) {
         $gs1 = new self();
+        $gs1->gs1 = $string;
+        $matches = collect();
+        preg_match("/^([\(]?00[\)]?)([0-9]{14,20})/", $string, $matches);
+        if ($matches) {
+            $gs1->sscc = $matches[2];
+            $string = str_replace($matches[0], "", $string);
+        }
         preg_match("/^([\(]?01[\)]?)([0-9]{14})/", $string, $matches);
         if ($matches) {
-            $gs1->gtin = (string) $matches[2];
-            $gs1->data [1] = $gs1->gtin;
+            $gtin = $matches[2];
+            if (Gtin::validate($gtin)) {
+                $gs1->gtin = $gtin;
+            } else {
+                $gs1->content = $gtin;
+            }
+            $string = str_replace($matches[0], "", $string);
+        }
+        preg_match("/^([\(]?02[\)]?)([0-9]{6,14})/", $string, $matches);
+        if ($matches) {
+            $gs1->content = $matches[2];
             $string = str_replace($matches[0], "", $string);
         }
         preg_match("/([\(]?3102[\)]?)([0-9]{6})/", $string, $weights);
         if ($weights) {
-            $gs1->netWeight = (int) $weights[2];
-            $gs1->data [3102] = $gs1->netWeight;
+            $gs1->netWeight = $weights[2] / 100;
             $string = str_replace($weights[0], "", $string);
         }
         preg_match("/([\(]?3302[\)]?)([0-9]{6})/", $string, $matches);
         if ($matches) {
-            $gs1->grossWeight = (int) $matches[2];
-            $gs1->data [3302] = $gs1->grossWeight;
+            $gs1->grossWeight = $matches[2] / 100;
             $string = str_replace($matches[0], "", $string);
         }
         preg_match("/([\(]?3201[\)]?)([0-9]{6})/", $string, $weights);  // Net weight in pounds; 1 decimal
         if ($weights) {
-            $gs1->netWeight = (int) ($weights[2] / 10 / 2.205);
-            $gs1->data [3102] = $gs1->netWeight;
+            $gs1->netWeight = $weights[2] / 10 / 2.205;
             $string = str_replace($weights[0], "", $string);
         }
         preg_match("/([\(]?11[\)]?)(\d{2}(?:0\d|1[0-2])(?:[0-2]\d|3[01]))/", $string, $matches);
         if ($matches) {
-            $gs1->productionDate = (int) $matches[2];
-            $gs1->data [11] = $gs1->productionDate;
+            $gs1->productionDate = $matches[2];
             $string = str_replace($matches[0], "", $string);
         }
         preg_match("/([\(]?17[\)]?)(\d{2}(?:0\d|1[0-2])(?:[0-2]\d|3[01]))/", $string, $matches);
         if ($matches) {
-            $gs1->expirationDate = (int) $matches[2];
-            $gs1->data [17] = $gs1->expirationDate;
+            $gs1->expirationDate = $matches[2];
             $string = str_replace($matches[0], "", $string);
         }
-        preg_match("/([\(]?10[\)]?)([0-9]{1,20})/", $string, $matches);
+        preg_match("/([\(]?10[\)]?)([0-9A-Z]{1,20})/", $string, $matches);
         if ($matches) {
-            $gs1->batch = (int) $matches[2];
-            $gs1->data [10] = $gs1->batch;
+            $gs1->batch = $matches[2];
             $string = str_replace($matches[0], "", $string);
         }
-        preg_match("/([\(]?21[\)]?)([0-9]{1,20})/", $string, $matches);
+        preg_match("/([\(]?21[\)]?)([0-9SN]{1,20})/", $string, $matches);
         if ($matches) {
-            $gs1->serial = (int) $matches[2];
-            $gs1->data [21] = $gs1->serial;
-            ;
+            $gs1->serial = $matches[2];
             $string = str_replace($matches[0], "", $string);
         }
         preg_match("/([\(]?37[\)]?)([0-9]{1,4})/", $string, $matches);
         if ($matches) {
             $gs1->pieces = (int) $matches[2];
-            $gs1->data [37] = $gs1->pieces;
-            ;
             $string = str_replace($matches[0], "", $string);
         }
-        ksort($gs1->data);
         return $gs1;
     }
 
@@ -174,14 +223,16 @@ class Gs1
      **/
     public function __toString()
     {
-        $s [] = '(01)' . $this->gtin;
+        $s [] = $this->gtin ? '(01)' . $this->gtin : null;
+        $s [] = $this->sscc ? '(00)' . $this->sscc : null;
+        $s [] = $this->content ? '(02)' . $this->content : null;
         $s [] = $this->batch ? '(10)' . $this->batch : null;
+        $s [] = $this->netWeight ? '(3102)' . str_pad((string) $this->netWeight, 6, "0", STR_PAD_LEFT) : null;
+        $s [] = $this->grossWeight ? '(3302)' . str_pad((string) $this->grossWeight, 6, "0") : null;
         $s [] = $this->productionDate ? '(11)' . $this->productionDate : null;
         $s [] = $this->expirationDate ? '(17)' . $this->expirationDate : null;
         $s [] = $this->serial ? '(21)' . $this->serial : null;
         $s [] = $this->pieces ? '(37)' . $this->pieces : null;
-        $s [] = $this->netWeight ? '(3102)' . str_pad((string) $this->netWeight, 6, "0", STR_PAD_LEFT) : null;
-        $s [] = $this->grossWeight ? '(3302)' . str_pad((string) $this->grossWeight, 6, "0") : null;
         return implode($s);
     }
 
