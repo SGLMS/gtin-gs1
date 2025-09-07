@@ -1,6 +1,6 @@
 # GS1 / GTIN
 
-GS1-128 / GTIN (UPCA; EAN8; ITF14) creator and parser.  We use these for our projects, but you are welcome to use them.
+GS1-128 / GTIN (UPCA; EAN8; ITF14) creator and parser; including barcode generation.
 
 In this version we have included Laravel Service Providers.
 

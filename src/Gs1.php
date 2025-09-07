@@ -175,7 +175,7 @@ class Gs1
         }
         preg_match("/([\(]?3102[\)]?)([0-9]{6})/", $string, $weights);
         if ($weights) {
-            $gs1->netWeight = $weights[2] / 100;
+            $gs1->netWeight = (int) round($weights[2] / 100, 0);
             $string = str_replace($weights[0], "", $string);
         }
         preg_match("/([\(]?3302[\)]?)([0-9]{6})/", $string, $matches);
