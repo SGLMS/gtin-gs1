@@ -24,6 +24,7 @@ namespace Sglms\Gs1Gtin;
  **/
 enum Gs1Code: string
 {
+    case SSCC           = '00'; // n2+n18
     case GTIN           = '01'; // n2+n14
     case Content        = '02'; // n2+n14
     case BatchNumber    = '10';
