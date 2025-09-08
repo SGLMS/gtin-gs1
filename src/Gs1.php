@@ -185,7 +185,7 @@ class Gs1
         }
         preg_match("/([\(]?3201[\)]?)([0-9]{6})/", $string, $weights);  // Net weight in pounds; 1 decimal
         if ($weights) {
-            $gs1->netWeight = $weights[2] / 10 / 2.205;
+            $gs1->netWeight = (int) round($weights[2] / 10 / 2.205, 0);
             $string = str_replace($weights[0], "", $string);
         }
         preg_match("/([\(]?11[\)]?)(\d{2}(?:0\d|1[0-2])(?:[0-2]\d|3[01]))/", $string, $matches);
