@@ -34,6 +34,7 @@
                 "Sglms\\Gs1Gtin\\Gs1ServiceProvider"
             ],
             "aliases": {
+                "Gtin": "Sglms\\Gs1Gtin\\Facades\\Gtin",
                 "Gs1": "Sglms\\Gs1Gtin\\Facades\\Gs1"
             }
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SGLMS GS1 / GTIN
  *
@@ -37,4 +38,12 @@ enum Gs1Code: string
     case Units          = '37'; // n2+n..8
     case NetWeight      = '3102'; //n4+n6 (2 decimals)
     case GrossWeight    = '3302'; //n4+n6 (2 decimals)
+
+    public static function filter($codes)
+    {
+        $filtered = array_filter(self::cases(), function (self $case) use ($codes) {
+            return in_array($case->value, $codes, true);
+        });
+        return $filtered;
+    }
 }

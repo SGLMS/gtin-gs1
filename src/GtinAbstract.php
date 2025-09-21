@@ -43,16 +43,15 @@ abstract class GtinAbstract
     public string     $type = 'GTIN-14';
     public int        $packagingLevel = 1;  // Packing Level for GTIN-14
 
-    /**
-     * Display GTIN Number
-     *
-     * @return string
-     **/
-    public function __toString()
-    {
-        return (string) $this->number;
-    }
 
+    /**
+     * Constructor
+     *
+     * @param integer      $itemNumber
+     * @param string|null  $companyPrefix
+     * @param string|null  $type           [Ex. GTIN-14] 
+     * @param integer|null $packagingLevel Packaging Level (Indicator according to GS1 Standards). Default: 1
+     */
     public function __construct(
         int $itemNumber,
         ?string $companyPrefix = null,
@@ -88,6 +87,17 @@ abstract class GtinAbstract
         );
         return $this;
     }
+
+    /**
+     * Display GTIN Number
+     *
+     * @return string
+     **/
+    public function __toString()
+    {
+        return (string) $this->number;
+    }
+
 
     /**
      * Create a GTIN number (object) from a int or string
@@ -306,12 +316,12 @@ abstract class GtinAbstract
     }
 
     /**
-     * Validate GTIN
+     * Undocumented function
      *
-     * @param int|string $number Number to be validated
-     * @param ?string    $type   [Ex. GTIN-12, etc.]
+     * @param integer|string $number Number to be validated
+     * @param string|null    $type   TIN format. Default: GTIN-14
      *
-     * @return bool
+     * @return boolean
      */
     public static function validate(
         int|string $number,

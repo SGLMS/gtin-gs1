@@ -4,7 +4,7 @@ namespace Sglms\Gs1Gtin\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class Gs1 extends Facade
+class Gtin extends Facade
 {
 
     /**
@@ -14,6 +14,6 @@ class Gs1 extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'gs1';
+        return 'gtin';
     }
 }
