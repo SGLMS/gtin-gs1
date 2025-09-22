@@ -110,7 +110,7 @@ class Gtin8 extends GtinAbstract
             16,
             $bcHeight + 6,
             imagecolorallocate($barcode, 10, 10, 10),
-            'fonts/RobotoMono-SemiBold.ttf',
+            '../fonts/RobotoMono-SemiBold.ttf',
             substr((string) $this->number, 0, 4)
         );
         imagettftext(
@@ -120,7 +120,7 @@ class Gtin8 extends GtinAbstract
             53,
             $bcHeight + 6,
             imagecolorallocate($barcode, 10, 10, 10),
-            'fonts/RobotoMono-SemiBold.ttf',
+            '../fonts/RobotoMono-SemiBold.ttf',
             substr((string) $this->number, 4, 4)
         );
         imagedestroy($barcode);

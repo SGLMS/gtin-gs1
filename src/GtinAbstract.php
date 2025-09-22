@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace Sglms\Gs1Gtin;
 
-use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\BarcodeGeneratorJPG;
 use Picqer\Barcode\Renderers\HtmlRenderer;
 use Picqer\Barcode\Renderers\JpgRenderer;
@@ -49,7 +48,7 @@ abstract class GtinAbstract
      *
      * @param integer      $itemNumber
      * @param string|null  $companyPrefix
-     * @param string|null  $type           [Ex. GTIN-14] 
+     * @param string|null  $type           [Ex. GTIN-14]
      * @param integer|null $packagingLevel Packaging Level (Indicator according to GS1 Standards). Default: 1
      */
     public function __construct(
@@ -209,6 +208,16 @@ abstract class GtinAbstract
         return $renderer->render($barcode, $barcode->getWidth(), $height);
     }
 
+    public function barcode(?int $height = 50): string
+    {
+        $barcode = (new TypeCode128())->getBarcode($this->number);
+        $renderer = new SvgRenderer();
+        $renderer->setForegroundColor([50, 50, 50]); // Give a color red for the bars, default is black. Give it as 3 times 0-255 values for red, green and blue.
+        $renderer->setBackgroundColor([250, 250, 250]); // Give a color blue for the background, default is transparent. Give it as 3 times 0-255 values for red, green and blue.
+        $renderer->setSvgType($renderer::TYPE_SVG_INLINE);
+        return $renderer->render($barcode, $barcode->getWidth(), $height);
+    }
+
     /**
      * Get (base64) barcode image source.
      *
@@ -221,6 +230,11 @@ abstract class GtinAbstract
     {
         $barcode = (new TypeCode128())->getBarcode($this->number);
         $renderer = new PngRenderer();
+        $renderer = new SvgRenderer();
+        $renderer->setForegroundColor([50, 50, 50]); // Give a color red for the bars, default is black. Give it as 3 times 0-255 values for red, green and blue.
+        $renderer->setBackgroundColor([250, 250, 250]); // Give a color blue for the background, default is transparent. Give it as 3 times 0-255 values for red, green and blue.
+        $renderer->setSvgType($renderer::TYPE_SVG_INLINE);
+        return $renderer->render($barcode, $barcode->getWidth(), $height);
         return "data:image/png;base64," . base64_encode(
             $renderer->render($barcode, $barcode->getWidth(), $height)
         );
@@ -304,12 +318,12 @@ abstract class GtinAbstract
 
         imagettftext(
             $canvas,
-            11,
+            10,
             0,
-            (int) ($bcWidth * 0.25),
+            (int) ($bcWidth * 0.0),
             $bcHeight + 16,
             imagecolorallocate($canvas, 10, 10, 10),
-            'fonts/RobotoMono-SemiBold.ttf',
+            '../fonts/RobotoMono-SemiBold.ttf',
             (string) $this->number
         );
         imagejpeg($canvas, $filename . ".jpg", 100);

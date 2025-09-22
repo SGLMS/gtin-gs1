@@ -39,8 +39,8 @@ $gtin = Gtin::create(
 ```
 #### Display (on-the-fly)
 ```php
-// Display barcode
-echo "<img src='" . $gtin->getBarcodeSource() . "' />";
+// Display barcode (SVG)
+echo $gtin->barcode();
 ```
 
 ![barcode](resources/gtin.png "Generated barcode")
