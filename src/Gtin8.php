@@ -32,6 +32,23 @@ class Gtin8 extends GtinAbstract
 {
 
     /**
+     * Constructor
+     *
+     * @param integer      $itemNumber
+     * @param string|null  $companyPrefix
+     */
+    public function __construct(
+        int $itemNumber,
+        ?string $companyPrefix = null,
+    ) {
+        parent::__construct(
+            itemNumber: $itemNumber,
+            companyPrefix: $companyPrefix,
+            type: 'GTIN-8',
+        );
+    }
+
+    /**
      * Save barcode image (PNG).
      *
      * @param string $filename Separation or with of barcode

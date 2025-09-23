@@ -65,9 +65,12 @@ class Gs1
         $this->batch        = $data['10'] ?? null;
         $this->serial       = $data['21'] ?? null;
         $this->pieces       = $data['37'] ?? null;
-        $this->netWeight    = isset($data['3102']) ? (string) round($data['3102'] * 100) : null;
-        $this->netWeight    = isset($data['3201']) ? $data ['3201'] / 0.45359237 : $this->netWeight;
-        $this->grossWeight  = isset($data['3302']) ? (string) round($data['3302'] * 100) : null;
+        $this->netWeight    = isset($data['3102']) ? str_pad((string) $data['3102'], 6, "0", STR_PAD_LEFT) : null;
+        $this->grossWeight  = isset($data['3302']) ? str_pad((string) $data['3302'], 6, "0", STR_PAD_LEFT) : null;
+        if (isset($data['3201']) && $this->netWeight == null) {
+            $this->netWeight = str_pad((string) round((float) $data ['3201'] * 10 * 0.45359237, 0), 6, "0", STR_PAD_LEFT);
+            $this->data['3102'] = $this->netWeight;
+        }
     }
 
     /**
@@ -116,12 +119,12 @@ class Gs1
      * @param string|null $productionDate
      * @param string|null $expirationDate
      * @param string|null $pieces
-     * 
+     *
      * @return Gs1
      */
     public static function create(
-        int $gtin,
-        ?int $sscc = null,
+        string $gtin,
+        ?string $sscc = null,
         ?string $content = null,
         ?string $netWeight = null,
         ?string $grossWeight = null,
@@ -130,6 +133,7 @@ class Gs1
         ?string $productionDate = null,
         ?string $expirationDate = null,
         ?string $pieces = null,
+        ?string $netWeightPounds = null,
     ): Gs1 {
         $content = !$content && !Gtin::validate($gtin) ? $gtin : null;
         $gtin    = Gtin::validate($gtin) ? $gtin : null;
@@ -137,9 +141,9 @@ class Gs1
             '00' => $sscc,
             '01' => $gtin,
             '02' => $content,
-            '3102' => $netWeight,
-            '3201' => $netWeight ? (string) round((float) $netWeight * 2.205, 1) : null,
-            '3302' => $grossWeight,
+            '3102' => $netWeight ? str_pad((string) $netWeight, 6, "0", STR_PAD_LEFT) : null,
+            '3201' => $netWeightPounds ? str_pad((string) $netWeightPounds, 6, "0", STR_PAD_LEFT) : null,
+            '3302' => $grossWeight ? str_pad((string) $grossWeight, 6, "0", STR_PAD_LEFT) : null,
             '10' => $batch,
             '21' => $serial,
             '11' => $productionDate,
@@ -163,6 +167,7 @@ class Gs1
         $array = [];
         foreach (Gs1Code::filter($codes) as $code) {
             if (isset($this->data[$code->value])) {
+                // dump($code, $this->data[$code->value]);
                 $array [] = "({$code->value})" . $this->data[$code->value] ?? null;
             }
         }
@@ -273,6 +278,7 @@ class Gs1
         ?int $height = 50,
         ?bool $showNumbers = false
     ) {
+        // var_dump($this);
         $barcode = (new TypeCode128())->getBarcode((string) $this->get($codes));
         $renderer = new SvgRenderer();
         $renderer->setBackgroundColor([255, 255, 255]);

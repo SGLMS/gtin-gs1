@@ -341,14 +341,21 @@ abstract class GtinAbstract
         int|string $number,
         ?string    $type = 'GTIN-14'
     ): bool {
-        if (strlen((string) $number) < self::getMaxDigits($type)) {
-            throw new \ErrorException(_("Not enough digits!"), 1000, 1);
-        } else {
-            $checkDigit        = substr((string) $number, -1);
-            $companyItemNumber = substr((string) $number, 0, -1);
-            if ((int) $checkDigit === self::calculateCheckDigit((string) $companyItemNumber)) {
-                return true;
+        try {
+            $type = strtoupper($type);
+            if (strlen((string) $number) < self::getMaxDigits($type)) {
+                throw new \ErrorException(__("Not enough digits!"), 1000);
+            } else {
+                $checkDigit        = substr((string) $number, -1);
+                // die(var_dump($number, $checkDigit));
+                $companyItemNumber = substr((string) $number, 0, -1);
+                if ((int) $checkDigit === self::calculateCheckDigit((string) $companyItemNumber)) {
+                    return true;
+                }
+                return false;
             }
+        } catch (\Throwable $th) {
+            $type = 'GTIN-14';
             return false;
         }
     }
