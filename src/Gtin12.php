@@ -58,10 +58,9 @@ class Gtin12 extends GtinAbstract
      **/
     public function saveWithNumber(
         string $filename = "name",
-        int $sep         = 2,
-        int $height      = 36
+        int $height = 80
     ): void {
-        $generator = $this->saveBarcode($filename, $sep, $height);
+        $generator = $this->saveBarcode($filename, $height);
         $barcode   = imagecreatefromjpeg($filename . ".jpg");
         $bcWidth   = imagesx($barcode);
         $bcHeight  = imagesy($barcode);
@@ -96,20 +95,20 @@ class Gtin12 extends GtinAbstract
             $bcHeight - 8,
             0,
             0,
-            (int) ($bcWidth / 2  - 9),
+            (int) ($bcWidth / 2  - 11),
             10,
             10,
             10
         );
 
         // Canvas for new (final) image
-        $canvas   = imagecreatetruecolor($bcWidth + 20, $bcHeight + 16);
+        $canvas   = imagecreatetruecolor($bcWidth + 24, $bcHeight + 16);
         $bgColor  = imagecolorallocate($canvas, 255, 255, 255);
-        imagefilledrectangle($canvas, 0, 0, $bcWidth + 20, $bcHeight + 16, $bgColor);
+        imagefilledrectangle($canvas, 0, 0, $bcWidth + 24, $bcHeight + 16, $bgColor);
         imagecopyresampled(
             $canvas,
             $barcode,
-            10,
+            12,
             0,
             0,
             0,
@@ -121,7 +120,7 @@ class Gtin12 extends GtinAbstract
 
         imagettftext(
             $canvas,
-            8,
+            12,
             0,
             0,
             $bcHeight + 5,
@@ -131,29 +130,29 @@ class Gtin12 extends GtinAbstract
         );
         imagettftext(
             $canvas,
-            10,
+            16,
             0,
-            17,
-            $bcHeight + 5,
+            34,
+            $bcHeight + 12,
             imagecolorallocate($barcode, 10, 10, 10),
             '../fonts/RobotoMono-SemiBold.ttf',
             substr((string) $this->number, 1, 5)
         );
         imagettftext(
             $canvas,
-            10,
+            16,
             0,
-            66,
-            $bcHeight + 5,
+            132,
+            $bcHeight + 12,
             imagecolorallocate($barcode, 10, 10, 10),
             '../fonts/RobotoMono-SemiBold.ttf',
             substr((string) $this->number, 6, 5)
         );
         imagettftext(
             $canvas,
-            8,
+            14,
             0,
-            $bcWidth + 12,
+            $bcWidth + 14,
             $bcHeight + 5,
             imagecolorallocate($barcode, 10, 10, 10),
             '../fonts/RobotoMono-SemiBold.ttf',

@@ -59,10 +59,9 @@ class Gtin8 extends GtinAbstract
      **/
     public function saveWithNumber(
         string $filename = "name",
-        int $sep         = 1,
-        int $height      = 56
+        int $height = 80
     ): void {
-        $generator = $this->saveBarcode($filename, $sep, $height);
+        $generator = $this->saveBarcode($filename, $height);
         $barcode   = imagecreatefromjpeg($filename . ".jpg");
         $bcWidth   = imagesx($barcode);
         $bcHeight  = imagesy($barcode);
@@ -122,20 +121,20 @@ class Gtin8 extends GtinAbstract
 
         imagettftext(
             $canvas,
-            10,
-            0,
             16,
-            $bcHeight + 6,
+            0,
+            24,
+            $bcHeight + 12,
             imagecolorallocate($barcode, 10, 10, 10),
             '../fonts/RobotoMono-SemiBold.ttf',
             substr((string) $this->number, 0, 4)
         );
         imagettftext(
             $canvas,
-            10,
+            16,
             0,
-            53,
-            $bcHeight + 6,
+            102,
+            $bcHeight + 12,
             imagecolorallocate($barcode, 10, 10, 10),
             '../fonts/RobotoMono-SemiBold.ttf',
             substr((string) $this->number, 4, 4)

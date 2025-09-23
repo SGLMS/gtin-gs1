@@ -305,7 +305,7 @@ class Gs1
     final public function saveBarcode(
         string $filename,
         ?array $codes = ['01','21','37','3102'],
-        ?int $height = 50
+        ?int $height = 80
     ): void {
         $barcode = (new TypeCode128())->getBarcode($this->get($codes));
         $renderer = new JpgRenderer();
@@ -346,7 +346,7 @@ class Gs1
             (int) ($bcWidth * 0.025),
             $bcHeight + 16,
             imagecolorallocate($canvas, 10, 10, 10),
-            'fonts/RobotoMono-SemiBold.ttf',
+            '../fonts/RobotoMono-SemiBold.ttf',
             (string) $this->get($codes)
         );
         imagejpeg($canvas, $filename . ".jpg", 100);

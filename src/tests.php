@@ -11,20 +11,29 @@ error_reporting(E_ALL);
 
 $gtin = Gtin::create(
     itemNumber: 987654,
-    companyPrefix: '123',
+    companyPrefix: '123456',
     type: 'GTIN-14',
     packagingLevel: 1
 );
 
 echo $gtin;
+echo "<br/>";
 
 // Display barcode
+echo "SVG:";
+echo "<br/>";
 echo $gtin->barcode();
+echo "<br/>";
 
 // Save barcode
-$gtin->saveBarcode('../resources/gtin');
+/* $gtin->saveBarcode('../resources/gtin'); */
+/* echo "<img src='../resources/gtin.jpg' style=''/>"; */
+
+// Save barcode with numbers
 $gtin->saveWithNumber('../resources/gtin_numbers');
-echo "<img src='../resources/gtin_numbers.jpg' style='border:1px solid gray;'/>";
+echo "JPG (with numbers):";
+echo "<br/>";
+echo "<img src='../resources/gtin_numbers.jpg' style=''/>";
 
 echo "<hr>";
 
@@ -33,13 +42,19 @@ $gtin = Gtin12::create(
     itemNumber: 123,
     companyPrefix: '45678',
 );
-// GTIN: 614141000012
+// GTIN / UPC-A: 456780001230
 
 echo $gtin;
+echo "<br/>";
+echo "SVG:";
+echo "<br/>";
 echo $gtin->barcode();
 $gtin->saveBarcode('../resources/gtin12');
 $gtin->saveWithNumber('../resources/gtin12_numbers');
-echo "<img src='../resources/gtin12_numbers.jpg' style='border:1px solid gray;'/>";
+echo "<br/>";
+echo "JPG (with numbers):";
+echo "<br/>";
+echo "<img src='../resources/gtin12_numbers.jpg' style='scale:.75;'/>";
 
 echo "<hr>";
 
@@ -48,19 +63,26 @@ $gtin = Gtin8::create(
     companyPrefix: '4567'
 );
 echo $gtin;
+echo "<br/>";
+echo "SVG:";
+echo "<br/>";
 echo $gtin->barcode();
 $gtin->saveBarcode('../resources/gtin8');
 echo "<img src='../resources/gtin8.jpg' />";
 
 $gtin->saveWithNumber('../resources/gtin8_numbers');
-echo "<img src='../resources/gtin8_numbers.jpg' style='border:1px solid gray;'/>";
+echo "<br/>";
+echo "JPG (with numbers):";
+echo "<br/>";
+echo "<img src='../resources/gtin8_numbers.jpg' style='scale:0.75'/>";
 
 echo "<hr>";
 
-$gs1 = Gs1::parse('(01)00012345678905(10)ABC123(3201)000500(3302)000700(17)250630(21)SN123456(37)10(11)230101');
+$gs1 = Gs1::parse('(01)10012345678902(10)ABC123(3201)000500(3302)000700(17)250630(21)SN123456(37)10(11)230101');
 var_dump($gs1);
 echo $gs1;
 echo $gs1->barcode(showNumbers:true);
+$gs1->saveBarcode('../resources/gs1', ['01','37', '21','3102','3302'], 80);
 
 echo "<hr>";
 

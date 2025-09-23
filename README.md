@@ -71,21 +71,23 @@ Generate GTIN-12 (company number + item reference + check digit):
 ```php
 use Sglms\Gs1Gtin\Gtin12;
 
-$gtin = Gtin::create(
-    itemNumber: 1,
-    companyPrefix: '614141',
-    type: 'GTIN-12'
+$gtin = Gtin12::create(
+    itemNumber: 123,
+    companyPrefix: '45678',
 );
-// GTIN: 614141000012
+// GTIN / UPC-A: 456780001230
 ```
 
 ```php
 // Save barcode
-echo $gtin->saveBarcode('path/barcode');
-echo "<img src='path/barcode.jpg' />";
+$gtin->saveBarcode('path/barcode');
+
+// Save barcode with numbers
+$gtin->saveWithNumber('../resources/gtin12_numbers');
+echo "<img src='../resources/gtin12_numbers.jpg'/>";
 ```
 
-![barcode](resources/gtin12.jpg "Generated barcode")
+![barcode](resources/gtin12_numbers.jpg "Generated barcode")
 
 ### GTIN-8 (EAN-8)
 
@@ -94,75 +96,79 @@ Generate GTIN-8 (company number + item reference + check digit):
 ```php
 use Sglms\Gs1Gtin\Gtin8;
 
-
-$gtin = Gtin::create(
-    itemNumber: 0,
-    companyPrefix: '506789',
-    type: 'GTIN-8'
+$gtin = Gtin8::create(
+    itemNumber: 123,
+    companyPrefix: '4567'
 );
-// GTIN-8/EAN8: 50678907
-```
 
-```php
+echo $gtin;
+// GTIN-8 / EAN-8: 45671234
+
 // Save barcode
-echo $gtin->saveBarcode('path/barcode');
-echo "<img src='path/barcode.jpg' />";
+$gtin->barcode();
+
+$gtin->saveBarcode('../resources/gtin8');
+echo "<img src='../resources/gtin8.jpg' />";
+
+// Save barcode with numbers
+$gtin->saveWithNumber('../resources/gtin8_numbers');
+echo "<img src='../resources/gtin8_numbers.jpg'/>";
 ```
 
-![barcode](resources/gtin8.jpg "Generated barcode")
+![barcode](resources/gtin8_numbers.jpg "Generated barcode")
 
 ### GS1
 
 ```php
 use Sglms\Gs1Gtin\Gs1;
 
-$gs1 = Gs1::parse('(01)00012345678905(10)ABC123(3102)000500(3302)000700(17)250630(21)SN123456(37)10(11)230101');
+$gs1 = Gs1::parse('(01)10012345678902(10)ABC123(3201)000500(3302)000700(17)250630(21)SN123456(37)10(11)230101');
+echo $gs1;
+echo $gs1->barcode(showNumbers:true);
+// GS1: (01)00012345678905(10)ABC123(3102)002268(3302)000700(11)230101(17)250630(21)SN123456(37)10
 
-// Sglms\Gs1Gtin\Gs1 {
-//   +gs1: "(01)00012345678905(10)ABC123(3102)000500(3302)000700(17)250630(21)SN123456(37)10(11)230101"
-//   +sscc: null
-//   +gtin: "00012345678905"
-//   +content: null
-//   +netWeight: 5
-//   +grossWeight: 7
-//   +batch: "ABC123"
-//   +serial: "SN123456"
-//   +productionDate: "230101"
-//   +expirationDate: "250630"
-//   +pieces: 10
-// }
-
-$gs1 = Gs1::create(gtin: "00012345678904", batch: "ABC123");
-
-// Sglms\Gs1Gtin\Gs1 {
-//   +data: array:2 [▶]
-//   +gs1: "(01)00012345678905(10)ABC123"
-//   +sscc: null
-//   +gtin: "00012345678905"
-//   +content: ""
-//   +netWeight: null
-//   +grossWeight: null
-//   +batch: "ABC123"
-//   +serial: null
-//   +productionDate: null
-//   +expirationDate: null
-//   +pieces: null
-// }
-
-echo "<img src='" . $gs1->getBarcodeSource() . "' />";
+// Or, you can save a JPG image with numbers
+$gs1->saveBarcode('../resources/gs1', ['01','37', '21','3102','3302'], 80);
 ```
-
-![barcode](resources/gs1.png "Generated barcode")
-
-**Note**: GS1 works only with GTIN-14; per standards recommendations.
-
-```php
-$gs1->saveBarcode('path/gs1');
-echo "<img src='path/gs1.jpg' />";
-```
-
 ![barcode](resources/gs1.jpg "Generated barcode")
 
+    object(Sglms\Gs1Gtin\Gs1)[4]
+      public array 'data' => 
+        array (size=8)
+          '01' => string '00012345678905' (length=14)
+          3302 => string '000700' (length=6)
+          3102 => string '002268' (length=6)
+          11 => string '230101' (length=6)
+          17 => string '250630' (length=6)
+          21 => string 'SN123456' (length=8)
+          37 => int 10
+          10 => string 'ABC123' (length=6)
+      public ?string 'gs1' => string '(01)00012345678905(10)ABC123(3201)000500(3302)000700(17)250630(21)SN123456(37)10(11)230101' (length=90)
+      public ?string 'sscc' => null
+      public ?string 'gtin' => string '00012345678905' (length=14)
+      public ?string 'content' => null
+      public ?string 'netWeight' => string '002268' (length=6)
+      public ?string 'grossWeight' => string '000700' (length=6)
+      public ?string 'batch' => string 'ABC123' (length=6)
+      public ?string 'serial' => string 'SN123456' (length=8)
+      public ?string 'productionDate' => string '230101' (length=6)
+      public ?string 'expirationDate' => string '250630' (length=6)
+      public ?int 'pieces' => int 10
+
+```php
+$gs1 = Gs1::create(
+    gtin: '00012345678905',
+    serial: 'ABC123',
+    netWeightPounds: 1000,
+    grossWeight:6000,
+    pieces:10,
+);
+echo $gs1;
+echo $gs1->barcode(
+    codes: ['01','37', '21','3102','3302'],
+    showNumbers:true
+);
+```
 
 ### Standards
 

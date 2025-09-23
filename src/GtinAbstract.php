@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Sglms\Gs1Gtin;
 
 use Picqer\Barcode\BarcodeGeneratorJPG;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\Renderers\HtmlRenderer;
 use Picqer\Barcode\Renderers\JpgRenderer;
 use Picqer\Barcode\Renderers\PngRenderer;
@@ -212,10 +213,10 @@ abstract class GtinAbstract
     {
         $barcode = (new TypeCode128())->getBarcode($this->number);
         $renderer = new SvgRenderer();
-        $renderer->setForegroundColor([50, 50, 50]); // Give a color red for the bars, default is black. Give it as 3 times 0-255 values for red, green and blue.
-        $renderer->setBackgroundColor([250, 250, 250]); // Give a color blue for the background, default is transparent. Give it as 3 times 0-255 values for red, green and blue.
+        $renderer->setForegroundColor([50, 50, 50]);
+        $renderer->setBackgroundColor([250, 250, 250]);
         $renderer->setSvgType($renderer::TYPE_SVG_INLINE);
-        return $renderer->render($barcode, $barcode->getWidth(), $height);
+        return $renderer->render($barcode, $barcode->getWidth() * 2 , $height);
     }
 
     /**
@@ -275,8 +276,7 @@ abstract class GtinAbstract
      **/
     public function saveBarcode(
         string $filename = "name",
-        int    $sep      = 2,
-        int    $height   = 36
+        int $height = 50
     ): void {
         $barcode = (new TypeCode128())->getBarcode($this->number);
         $renderer = new JpgRenderer();
@@ -286,8 +286,8 @@ abstract class GtinAbstract
             $filename . ".jpg",
             $renderer->render(
                 $barcode,
-                $barcode->getWidth(),
-                50
+                $barcode->getWidth() * 2,
+                $height
             ),
         );
     }
@@ -303,10 +303,9 @@ abstract class GtinAbstract
      **/
     public function saveWithNumber(
         string $filename,
-        int    $sep    = 2,
         int    $height = 36
     ): void {
-        $generator = $this->saveBarcode($filename, $sep, $height);
+        $generator = $this->saveBarcode($filename, height: $height);
         $barcode   = imagecreatefromjpeg($filename . ".jpg");
         $bcWidth   = imagesx($barcode);
         $bcHeight  = imagesy($barcode);
@@ -318,9 +317,9 @@ abstract class GtinAbstract
 
         imagettftext(
             $canvas,
-            10,
+            11,
             0,
-            (int) ($bcWidth * 0.0),
+            (int) ($bcWidth * 0.25),
             $bcHeight + 16,
             imagecolorallocate($canvas, 10, 10, 10),
             '../fonts/RobotoMono-SemiBold.ttf',
