@@ -278,7 +278,6 @@ class Gs1
         ?int $height = 50,
         ?bool $showNumbers = false
     ) {
-        // var_dump($this);
         $barcode = (new TypeCode128())->getBarcode((string) $this->get($codes));
         $renderer = new SvgRenderer();
         $renderer->setBackgroundColor([255, 255, 255]);
@@ -346,7 +345,7 @@ class Gs1
             (int) ($bcWidth * 0.025),
             $bcHeight + 16,
             imagecolorallocate($canvas, 10, 10, 10),
-            '../fonts/RobotoMono-SemiBold.ttf',
+            __DIR__ . '/../fonts/RobotoMono-SemiBold.ttf',
             (string) $this->get($codes)
         );
         imagejpeg($canvas, $filename . ".jpg", 100);

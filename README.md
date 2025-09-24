@@ -43,7 +43,7 @@ $gtin = Gtin::create(
 echo $gtin->barcode();
 ```
 
-![barcode](resources/gtin.png "Generated barcode")
+![barcode](resources/gtin.jpg "Generated barcode")
 
 #### Save (with numbers) and display
 ```php
@@ -52,7 +52,7 @@ echo $gtin->saveBarcode('path/barcode');
 echo "<img src='path/barcode.jpg' />";
 ```
 
-![barcode](resources/gtin.jpg "Generated barcode")
+![barcode](resources/gtin_numbers.jpg "Generated barcode")
 
 For now, only JPG images are supported, but will add other standards as needed (by our rojects).
 
