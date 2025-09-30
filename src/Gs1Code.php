@@ -1,8 +1,9 @@
 <?php
+
 /**
  * SGLMS GS1 / GTIN
  *
- * PHP Version 8.1
+ * PHP Version 8.3
  *
  * @category SGLMS_Library
  * @package  GS1GTIN
@@ -24,6 +25,7 @@ namespace Sglms\Gs1Gtin;
  **/
 enum Gs1Code: string
 {
+    case SSCC           = '00'; // n2+n18
     case GTIN           = '01'; // n2+n14
     case Content        = '02'; // n2+n14
     case BatchNumber    = '10';
@@ -36,4 +38,12 @@ enum Gs1Code: string
     case Units          = '37'; // n2+n..8
     case NetWeight      = '3102'; //n4+n6 (2 decimals)
     case GrossWeight    = '3302'; //n4+n6 (2 decimals)
+
+    public static function filter($codes)
+    {
+        $filtered = array_filter(self::cases(), function (self $case) use ($codes) {
+            return in_array($case->value, $codes, true);
+        });
+        return $filtered;
+    }
 }

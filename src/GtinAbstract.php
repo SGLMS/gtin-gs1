@@ -16,8 +16,13 @@ declare(strict_types=1);
 
 namespace Sglms\Gs1Gtin;
 
-use Picqer\Barcode\BarcodeGeneratorPNG;
 use Picqer\Barcode\BarcodeGeneratorJPG;
+use Picqer\Barcode\BarcodeGeneratorPNG;
+use Picqer\Barcode\Renderers\HtmlRenderer;
+use Picqer\Barcode\Renderers\JpgRenderer;
+use Picqer\Barcode\Renderers\PngRenderer;
+use Picqer\Barcode\Renderers\SvgRenderer;
+use Picqer\Barcode\Types\TypeCode128;
 
 /**
  * Class: GtinInterface
@@ -30,11 +35,60 @@ use Picqer\Barcode\BarcodeGeneratorJPG;
  **/
 abstract class GtinAbstract
 {
-    protected string  $companyItemNumber;
-    protected string  $companyPrefix;
-    protected string  $itemReference;
-    public int        $checkDigit;
+    protected string $companyItemNumber;
+    protected string $companyPrefix;
+    protected string $itemReference;
+    public int $checkDigit;
     public int|string $number;
+    public string $type = 'GTIN-14';
+    public int $packagingLevel = 1;  // Packing Level for GTIN-14
+
+
+    /**
+     * Constructor
+     *
+     * @param integer      $itemNumber
+     * @param string|null  $companyPrefix
+     * @param string|null  $type           [Ex. GTIN-14]
+     * @param integer|null $packagingLevel Packaging Level (Indicator according to GS1 Standards). Default: 1
+     */
+    public function __construct(
+        int $itemNumber,
+        ?string $companyPrefix = null,
+        ?string $type = 'GTIN-14',
+        ?int $packagingLevel = 1
+    ) {
+        $this->type = strtoupper($type);
+        $this->packagingLevel = $packagingLevel ?: 1;
+        if (
+            strlen(
+                (string) $companyPrefix . (string) $itemNumber
+            ) > self::getMaxDigits($this->type)
+        ) {
+            if (
+                self::validate(
+                    (string) $companyPrefix
+                    . (string) $itemNumber,
+                    $this->type
+                )
+            ) {
+                $this->companyItemNumber = substr((string) $companyPrefix . (string) $itemNumber, 0, -1);
+                $this->checkDigit        = (int) substr((string) $companyPrefix . (string) $itemNumber, -1);
+            } else {
+                throw new \ErrorException(_("Invalid Check Digit"));
+            }
+        } else {
+            $this->buildCompanyItemNumber($itemNumber, $companyPrefix, $this->type);
+            $this->checkDigit     = Gtin::calculateCheckDigit($this->companyItemNumber);
+        }
+
+        $this->number = (string) (
+            ($this->type == 'GTIN-14' ? (string) $packagingLevel : '') .
+            (string) $this->companyItemNumber .
+            (string) $this->checkDigit
+        );
+        return $this;
+    }
 
     /**
      * Display GTIN Number
@@ -46,43 +100,30 @@ abstract class GtinAbstract
         return (string) $this->number;
     }
 
-    public function __construct(?int $itemNumber, ?string $companyPrefix = null, string $type = 'GTIN-12')
-    {
-        if (strlen((string) $companyPrefix . (string) $itemNumber) > self::getMaxDigits($type)) {
-            if (self::validate((string) $companyPrefix . (string) $itemNumber, $type)) {
-                $this->companyItemNumber = substr((string) $companyPrefix . (string) $itemNumber, 0, -1);
-                $this->checkDigit        = (int) substr((string) $companyPrefix . (string) $itemNumber, -1);
-            } else {
-                throw new \ErrorException(_("Invalid Check Digit"));
-            }
-        } else {
-            $this->buildCompanyItemNumber($itemNumber, $companyPrefix, $type);
-            $this->checkDigit     = Gtin::calculateCheckDigit($this->companyItemNumber);
-        }
-
-        $this->number = (string) (
-            (string) $this->companyItemNumber .
-            (string) $this->checkDigit
-        );
-        return $this;
-    }
 
     /**
      * Create a GTIN number (object) from a int or string
      *
-     * @param int    $itemNumber    Number
-     * @param string $companyPrefix Client Code or Id
-     * @param string $type          [Ex. GTIN-12, etc.]
+     * @param int    $itemNumber     Number
+     * @param string $companyPrefix  Client Code or Id
+     * @param string $type           [Ex. GTIN-14]
+     * @param int    $packagingLevel Packaging Level (Indicator according to GS1 Standards)
      *
      * @return \Sglms\Gtin\Gtin
      **/
     public static function create(
-        int     $itemNumber,
+        int $itemNumber,
         ?string $companyPrefix = null,
-        string  $type          = 'GTIN-12'
+        ?string $type = 'GTIN-14',
+        ?int $packagingLevel = 1
     ): \Sglms\Gs1Gtin\GtinAbstract {
         $class = get_called_class();
-        $gtin  = new $class($itemNumber, $companyPrefix, $type = 'GTIN-12');
+        $gtin  = new $class(
+            $itemNumber,
+            $companyPrefix,
+            $type,
+            $packagingLevel
+        );
         return $gtin;
     }
 
@@ -113,7 +154,7 @@ abstract class GtinAbstract
         }
         $missingZeros = $maxDigits - strlen($this->companyPrefix . $this->itemReference);
         $this->itemReference = sprintf(
-            '%0' . (strlen($this->itemReference) + $missingZeros). 'd',
+            '%0' . (strlen($this->itemReference) + $missingZeros) . 'd',
             $this->itemReference
         );
         $this->companyItemNumber = $this->companyPrefix . $this->itemReference;
@@ -139,6 +180,47 @@ abstract class GtinAbstract
         return 10 == $cd ? 0 : $cd;
     }
 
+    public function getBarcode()
+    {
+        return $barcode = (new TypeCode128())->getBarcode($this->number);
+    }
+
+    public function renderBarcode(?string $format = 'svg', ?int $height = 50)
+    {
+        $barcode = $this->getBarcode();
+        switch ($format) {
+            case 'png':
+                $renderer = new PngRenderer();
+                $renderer->setBackgroundColor([255, 255, 255]);
+                break;
+
+            case 'jpg':
+                $renderer = new JpgRenderer();
+                $renderer->setBackgroundColor([255, 255, 255]);
+                break;
+
+            case 'html':
+                $renderer = new HtmlRenderer();
+                break;
+
+            default:
+                $renderer = new SvgRenderer();
+                $renderer->setBackgroundColor([255, 255, 255]);
+                break;
+        }
+        return $renderer->render($barcode, $barcode->getWidth(), $height);
+    }
+
+    public function barcode(?int $height = 50): string
+    {
+        $barcode = (new TypeCode128())->getBarcode($this->number);
+        $renderer = new SvgRenderer();
+        $renderer->setForegroundColor([50, 50, 50]);
+        $renderer->setBackgroundColor([250, 250, 250]);
+        $renderer->setSvgType($renderer::TYPE_SVG_INLINE);
+        return $renderer->render($barcode, $barcode->getWidth() * 2, $height);
+    }
+
     /**
      * Get (base64) barcode image source.
      *
@@ -147,16 +229,19 @@ abstract class GtinAbstract
      *
      * @return string
      **/
-    public function getBarcodeSource(int $sep = 2, int $height = 36): string
+    public function getBarcodeSource(?int $height = 50): string
     {
-        $generator  = new BarcodeGeneratorPNG();
+        $barcode = (new TypeCode128())->getBarcode($this->number);
+        $renderer = new PngRenderer();
+        $renderer = new SvgRenderer();
+        $renderer->setForegroundColor([50, 50, 50]);
+        // Give a color red for the bars, default is black. Give it as 3 times 0-255 values for red, green and blue.
+        $renderer->setBackgroundColor([250, 250, 250]);
+        // Give a color blue for the background, default is transparent.
+        $renderer->setSvgType($renderer::TYPE_SVG_INLINE);
+        return $renderer->render($barcode, $barcode->getWidth(), $height);
         return "data:image/png;base64," . base64_encode(
-            $generator->getBarcode(
-                $this->number,
-                $generator::TYPE_CODE_128,
-                $sep,
-                $height
-            )
+            $renderer->render($barcode, $barcode->getWidth(), $height)
         );
     }
 
@@ -195,18 +280,19 @@ abstract class GtinAbstract
      **/
     public function saveBarcode(
         string $filename = "name",
-        int    $sep      = 2,
-        int    $height   = 36
+        int $height = 50
     ): void {
+        $barcode = (new TypeCode128())->getBarcode($this->number);
+        $renderer = new JpgRenderer();
+        $renderer->setBackgroundColor([255, 255, 255]);
         $generator  = new BarcodeGeneratorJPG();
         \file_put_contents(
             $filename . ".jpg",
-            $generator->getBarcode(
-                $this->number,
-                $generator::TYPE_CODE_128,
-                $sep,
+            $renderer->render(
+                $barcode,
+                $barcode->getWidth() * 2,
                 $height
-            )
+            ),
         );
     }
 
@@ -221,10 +307,9 @@ abstract class GtinAbstract
      **/
     public function saveWithNumber(
         string $filename,
-        int    $sep    = 2,
-        int    $height = 36
+        int $height = 36
     ): void {
-        $generator = $this->saveBarcode($filename, $sep, $height);
+        $generator = $this->saveBarcode($filename, height: $height);
         $barcode   = imagecreatefromjpeg($filename . ".jpg");
         $bcWidth   = imagesx($barcode);
         $bcHeight  = imagesy($barcode);
@@ -241,32 +326,39 @@ abstract class GtinAbstract
             (int) ($bcWidth * 0.25),
             $bcHeight + 16,
             imagecolorallocate($canvas, 10, 10, 10),
-            'fonts/RobotoMono-SemiBold.ttf',
+            '../resources/fonts/RobotoMono-SemiBold.ttf',
             (string) $this->number
         );
         imagejpeg($canvas, $filename . ".jpg", 100);
     }
 
     /**
-     * Validate GTIN
+     * Undocumented function
      *
-     * @param int|string $number Number to be validated
-     * @param ?string    $type   [Ex. GTIN-12, etc.]
+     * @param integer|string $number Number to be validated
+     * @param string|null    $type   TIN format. Default: GTIN-14
      *
-     * @return bool
+     * @return boolean
      */
     public static function validate(
         int|string $number,
-        ?string    $type = 'GTIN-14'
+        ?string $type = 'GTIN-14'
     ): bool {
-        if (strlen((string) $number) < self::getMaxDigits($type)) {
-            throw new \ErrorException(_("Not enough digits!"), 1000, 1);
-        } else {
-            $checkDigit        = substr((string) $number, -1);
-            $companyItemNumber = substr((string) $number, 0, -1);
-            if ((int) $checkDigit === self::calculateCheckDigit((string) $companyItemNumber)) {
-                return true;
+        try {
+            $type = strtoupper($type);
+            if (strlen((string) $number) < self::getMaxDigits($type)) {
+                throw new \ErrorException(__("Not enough digits!"), 1000);
+            } else {
+                $checkDigit        = substr((string) $number, -1);
+                // die(var_dump($number, $checkDigit));
+                $companyItemNumber = substr((string) $number, 0, -1);
+                if ((int) $checkDigit === self::calculateCheckDigit((string) $companyItemNumber)) {
+                    return true;
+                }
+                return false;
             }
+        } catch (\Throwable $th) {
+            $type = 'GTIN-14';
             return false;
         }
     }

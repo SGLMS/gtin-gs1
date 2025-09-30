@@ -30,23 +30,21 @@ use Picqer\Barcode\BarcodeGeneratorJPG;
  **/
 class Gtin8 extends GtinAbstract
 {
-
     /**
-     * Create a GTIN number (object) from a int or string
+     * Constructor
      *
-     * @param int    $itemNumber    Number
-     * @param string $companyPrefix Client Code or Id
-     * @param string $type          GTIN-12
-     *
-     * @return \Sglms\Gtin\Gtin
-     **/
-    public static function create(
-        int     $itemNumber,
-        ?string $companyPrefix  = null,
-        string  $type = 'GTIN-8'
-    ): \Sglms\Gs1Gtin\GtinAbstract {
-        $gtin             = new self($itemNumber, $companyPrefix, $type);
-        return $gtin;
+     * @param integer      $itemNumber
+     * @param string|null  $companyPrefix
+     */
+    public function __construct(
+        int $itemNumber,
+        ?string $companyPrefix = null,
+    ) {
+        parent::__construct(
+            itemNumber: $itemNumber,
+            companyPrefix: $companyPrefix,
+            type: 'GTIN-8',
+        );
     }
 
     /**
@@ -60,10 +58,9 @@ class Gtin8 extends GtinAbstract
      **/
     public function saveWithNumber(
         string $filename = "name",
-        int $sep         = 1,
-        int $height      = 56
+        int $height = 80
     ): void {
-        $generator = $this->saveBarcode($filename, $sep, $height);
+        $generator = $this->saveBarcode($filename, $height);
         $barcode   = imagecreatefromjpeg($filename . ".jpg");
         $bcWidth   = imagesx($barcode);
         $bcHeight  = imagesy($barcode);
@@ -123,22 +120,22 @@ class Gtin8 extends GtinAbstract
 
         imagettftext(
             $canvas,
-            10,
-            0,
             16,
-            $bcHeight + 6,
+            0,
+            24,
+            $bcHeight + 12,
             imagecolorallocate($barcode, 10, 10, 10),
-            'resources/RobotoMono-SemiBold.ttf',
+            '../resources/fonts/RobotoMono-SemiBold.ttf',
             substr((string) $this->number, 0, 4)
         );
         imagettftext(
             $canvas,
-            10,
+            16,
             0,
-            53,
-            $bcHeight + 6,
+            102,
+            $bcHeight + 12,
             imagecolorallocate($barcode, 10, 10, 10),
-            'resources/RobotoMono-SemiBold.ttf',
+            '../resources/fonts/RobotoMono-SemiBold.ttf',
             substr((string) $this->number, 4, 4)
         );
         imagedestroy($barcode);

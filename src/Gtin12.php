@@ -30,23 +30,21 @@ use Picqer\Barcode\BarcodeGeneratorJPG;
  **/
 class Gtin12 extends GtinAbstract
 {
-
     /**
-     * Create a GTIN number (object) from a int or string
+     * Constructor
      *
-     * @param int    $itemNumber    Number
-     * @param string $companyPrefix Client Code or Id
-     * @param string $type          GTIN-12
-     *
-     * @return \Sglms\Gtin\Gtin
-     **/
-    public static function create(
-        int     $itemNumber,
-        ?string $companyPrefix  = null,
-        string  $type = 'GTIN-12'
-    ): \Sglms\Gs1Gtin\GtinAbstract {
-        $gtin             = new self($itemNumber, $companyPrefix, $type);
-        return $gtin;
+     * @param integer      $itemNumber
+     * @param string|null  $companyPrefix
+     */
+    public function __construct(
+        int $itemNumber,
+        ?string $companyPrefix = null,
+    ) {
+        parent::__construct(
+            itemNumber: $itemNumber,
+            companyPrefix: $companyPrefix,
+            type: 'GTIN-12',
+        );
     }
 
     /**
@@ -60,10 +58,9 @@ class Gtin12 extends GtinAbstract
      **/
     public function saveWithNumber(
         string $filename = "name",
-        int $sep         = 2,
-        int $height      = 36
+        int $height = 80
     ): void {
-        $generator = $this->saveBarcode($filename, $sep, $height);
+        $generator = $this->saveBarcode($filename, $height);
         $barcode   = imagecreatefromjpeg($filename . ".jpg");
         $bcWidth   = imagesx($barcode);
         $bcHeight  = imagesy($barcode);
@@ -98,20 +95,20 @@ class Gtin12 extends GtinAbstract
             $bcHeight - 8,
             0,
             0,
-            (int) ($bcWidth / 2  - 9),
+            (int) ($bcWidth / 2  - 11),
             10,
             10,
             10
         );
 
         // Canvas for new (final) image
-        $canvas   = imagecreatetruecolor($bcWidth + 20, $bcHeight + 16);
+        $canvas   = imagecreatetruecolor($bcWidth + 24, $bcHeight + 16);
         $bgColor  = imagecolorallocate($canvas, 255, 255, 255);
-        imagefilledrectangle($canvas, 0, 0, $bcWidth + 20, $bcHeight + 16, $bgColor);
+        imagefilledrectangle($canvas, 0, 0, $bcWidth + 24, $bcHeight + 16, $bgColor);
         imagecopyresampled(
             $canvas,
             $barcode,
-            10,
+            12,
             0,
             0,
             0,
@@ -123,42 +120,42 @@ class Gtin12 extends GtinAbstract
 
         imagettftext(
             $canvas,
-            8,
+            12,
             0,
             0,
             $bcHeight + 5,
             imagecolorallocate($barcode, 10, 10, 10),
-            'resources/RobotoMono-SemiBold.ttf',
+            '../resources/fonts/RobotoMono-SemiBold.ttf',
             (string) substr((string) $this->number, 0, 1)
         );
         imagettftext(
             $canvas,
-            10,
+            16,
             0,
-            17,
-            $bcHeight + 5,
+            34,
+            $bcHeight + 12,
             imagecolorallocate($barcode, 10, 10, 10),
-            'resources/RobotoMono-SemiBold.ttf',
+            '../resources/fonts/RobotoMono-SemiBold.ttf',
             substr((string) $this->number, 1, 5)
         );
         imagettftext(
             $canvas,
-            10,
+            16,
             0,
-            66,
-            $bcHeight + 5,
+            132,
+            $bcHeight + 12,
             imagecolorallocate($barcode, 10, 10, 10),
-            'resources/RobotoMono-SemiBold.ttf',
+            '../resources/fonts/RobotoMono-SemiBold.ttf',
             substr((string) $this->number, 6, 5)
         );
         imagettftext(
             $canvas,
-            8,
+            14,
             0,
-            $bcWidth + 12,
+            $bcWidth + 14,
             $bcHeight + 5,
             imagecolorallocate($barcode, 10, 10, 10),
-            'resources/RobotoMono-SemiBold.ttf',
+            '../resources/fonts/RobotoMono-SemiBold.ttf',
             (string) substr((string) $this->number, -1)
         );
         imagedestroy($barcode);
