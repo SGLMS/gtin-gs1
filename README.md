@@ -43,7 +43,7 @@ $gtin = Gtin::create(
 echo $gtin->barcode();
 ```
 
-![barcode](resources/gtin.jpg "Generated barcode")
+![barcode](resources/images/gtin.jpg "Generated barcode")
 
 #### Save (with numbers) and display
 ```php
@@ -52,9 +52,9 @@ echo $gtin->saveBarcode('path/barcode');
 echo "<img src='path/barcode.jpg' />";
 ```
 
-![barcode](resources/gtin_numbers.jpg "Generated barcode")
+![barcode](resources/images/gtin_numbers.jpg "Generated barcode")
 
-For now, only JPG images are supported, but will add other standards as needed (by our rojects).
+For now, only JPG images are supported, but will add other standards as needed.
 
 #### Validate
 
@@ -83,11 +83,11 @@ $gtin = Gtin12::create(
 $gtin->saveBarcode('path/barcode');
 
 // Save barcode with numbers
-$gtin->saveWithNumber('../resources/gtin12_numbers');
-echo "<img src='../resources/gtin12_numbers.jpg'/>";
+$gtin->saveWithNumber('../resources/images/gtin12_numbers');
+echo "<img src='../resources/images/gtin12_numbers.jpg'/>";
 ```
 
-![barcode](resources/gtin12_numbers.jpg "Generated barcode")
+![barcode](resources/images/gtin12_numbers.jpg "Generated barcode")
 
 ### GTIN-8 (EAN-8)
 
@@ -107,30 +107,32 @@ echo $gtin;
 // Save barcode
 $gtin->barcode();
 
-$gtin->saveBarcode('../resources/gtin8');
-echo "<img src='../resources/gtin8.jpg' />";
+$gtin->saveBarcode('../resources/images/gtin8');
+echo "<img src='../resources/images/gtin8.jpg' />";
 
 // Save barcode with numbers
-$gtin->saveWithNumber('../resources/gtin8_numbers');
-echo "<img src='../resources/gtin8_numbers.jpg'/>";
+$gtin->saveWithNumber('../resources/images/gtin8_numbers');
+echo "<img src='../resources/images/gtin8_numbers.jpg'/>";
 ```
 
-![barcode](resources/gtin8_numbers.jpg "Generated barcode")
+![barcode](resources/images/gtin8_numbers.jpg "Generated barcode")
 
-### GS1
+## GS1
 
 ```php
 use Sglms\Gs1Gtin\Gs1;
 
 $gs1 = Gs1::parse('(01)10012345678902(10)ABC123(3201)000500(3302)000700(17)250630(21)SN123456(37)10(11)230101');
 echo $gs1;
+// GS1: (01)10012345678902(10)ABC123(3102)002268(3302)000700(11)230101(17)250630(21)SN123456(37)10
+
+// Display (SVG)
 echo $gs1->barcode(showNumbers:true);
-// GS1: (01)00012345678905(10)ABC123(3102)002268(3302)000700(11)230101(17)250630(21)SN123456(37)10
 
 // Or, you can save a JPG image with numbers
-$gs1->saveBarcode('../resources/gs1', ['01','37', '21','3102','3302'], 80);
+$gs1->saveBarcode('../resources/images/images/gs1', ['01','37', '21','3102','3302'], 80);
 ```
-![barcode](resources/gs1.jpg "Generated barcode")
+![barcode](resources/images/gs1.jpg "Generated barcode")
 
     object(Sglms\Gs1Gtin\Gs1)[4]
       public array 'data' => 
@@ -154,6 +156,8 @@ $gs1->saveBarcode('../resources/gs1', ['01','37', '21','3102','3302'], 80);
       public ?string 'productionDate' => string '230101' (length=6)
       public ?string 'expirationDate' => string '250630' (length=6)
       public ?int 'pieces' => int 10
+
+You can also create a GS1 instance verbously.
 
 ```php
 $gs1 = Gs1::create(
@@ -195,4 +199,4 @@ enum Gs1Code: string
 
 
 # Credits
-Bar code generator (images) : [picqer/php-barcode-generator](https://github.com/picqer/php-barcode-generator).
+Bar code generator: [picqer/php-barcode-generator](https://github.com/picqer/php-barcode-generator).

@@ -35,13 +35,13 @@ use Picqer\Barcode\Types\TypeCode128;
  **/
 abstract class GtinAbstract
 {
-    protected string  $companyItemNumber;
-    protected string  $companyPrefix;
-    protected string  $itemReference;
-    public int        $checkDigit;
+    protected string $companyItemNumber;
+    protected string $companyPrefix;
+    protected string $itemReference;
+    public int $checkDigit;
     public int|string $number;
-    public string     $type = 'GTIN-14';
-    public int        $packagingLevel = 1;  // Packing Level for GTIN-14
+    public string $type = 'GTIN-14';
+    public int $packagingLevel = 1;  // Packing Level for GTIN-14
 
 
     /**
@@ -60,15 +60,17 @@ abstract class GtinAbstract
     ) {
         $this->type = strtoupper($type);
         $this->packagingLevel = $packagingLevel ?: 1;
-        if (strlen(
-            (string) $companyPrefix . (string) $itemNumber
-        ) > self::getMaxDigits($this->type)
+        if (
+            strlen(
+                (string) $companyPrefix . (string) $itemNumber
+            ) > self::getMaxDigits($this->type)
         ) {
-            if (self::validate(
-                (string) $companyPrefix
-                . (string) $itemNumber,
-                $this->type
-            )
+            if (
+                self::validate(
+                    (string) $companyPrefix
+                    . (string) $itemNumber,
+                    $this->type
+                )
             ) {
                 $this->companyItemNumber = substr((string) $companyPrefix . (string) $itemNumber, 0, -1);
                 $this->checkDigit        = (int) substr((string) $companyPrefix . (string) $itemNumber, -1);
@@ -110,10 +112,10 @@ abstract class GtinAbstract
      * @return \Sglms\Gtin\Gtin
      **/
     public static function create(
-        int     $itemNumber,
+        int $itemNumber,
         ?string $companyPrefix = null,
-        ?string $type          = 'GTIN-14',
-        ?int    $packagingLevel = 1
+        ?string $type = 'GTIN-14',
+        ?int $packagingLevel = 1
     ): \Sglms\Gs1Gtin\GtinAbstract {
         $class = get_called_class();
         $gtin  = new $class(
@@ -152,7 +154,7 @@ abstract class GtinAbstract
         }
         $missingZeros = $maxDigits - strlen($this->companyPrefix . $this->itemReference);
         $this->itemReference = sprintf(
-            '%0' . (strlen($this->itemReference) + $missingZeros). 'd',
+            '%0' . (strlen($this->itemReference) + $missingZeros) . 'd',
             $this->itemReference
         );
         $this->companyItemNumber = $this->companyPrefix . $this->itemReference;
@@ -216,7 +218,7 @@ abstract class GtinAbstract
         $renderer->setForegroundColor([50, 50, 50]);
         $renderer->setBackgroundColor([250, 250, 250]);
         $renderer->setSvgType($renderer::TYPE_SVG_INLINE);
-        return $renderer->render($barcode, $barcode->getWidth() * 2 , $height);
+        return $renderer->render($barcode, $barcode->getWidth() * 2, $height);
     }
 
     /**
@@ -232,8 +234,10 @@ abstract class GtinAbstract
         $barcode = (new TypeCode128())->getBarcode($this->number);
         $renderer = new PngRenderer();
         $renderer = new SvgRenderer();
-        $renderer->setForegroundColor([50, 50, 50]); // Give a color red for the bars, default is black. Give it as 3 times 0-255 values for red, green and blue.
-        $renderer->setBackgroundColor([250, 250, 250]); // Give a color blue for the background, default is transparent. Give it as 3 times 0-255 values for red, green and blue.
+        $renderer->setForegroundColor([50, 50, 50]);
+        // Give a color red for the bars, default is black. Give it as 3 times 0-255 values for red, green and blue.
+        $renderer->setBackgroundColor([250, 250, 250]);
+        // Give a color blue for the background, default is transparent.
         $renderer->setSvgType($renderer::TYPE_SVG_INLINE);
         return $renderer->render($barcode, $barcode->getWidth(), $height);
         return "data:image/png;base64," . base64_encode(
@@ -303,7 +307,7 @@ abstract class GtinAbstract
      **/
     public function saveWithNumber(
         string $filename,
-        int    $height = 36
+        int $height = 36
     ): void {
         $generator = $this->saveBarcode($filename, height: $height);
         $barcode   = imagecreatefromjpeg($filename . ".jpg");
@@ -322,7 +326,7 @@ abstract class GtinAbstract
             (int) ($bcWidth * 0.25),
             $bcHeight + 16,
             imagecolorallocate($canvas, 10, 10, 10),
-            '../fonts/RobotoMono-SemiBold.ttf',
+            '../resources/fonts/RobotoMono-SemiBold.ttf',
             (string) $this->number
         );
         imagejpeg($canvas, $filename . ".jpg", 100);
@@ -338,7 +342,7 @@ abstract class GtinAbstract
      */
     public static function validate(
         int|string $number,
-        ?string    $type = 'GTIN-14'
+        ?string $type = 'GTIN-14'
     ): bool {
         try {
             $type = strtoupper($type);

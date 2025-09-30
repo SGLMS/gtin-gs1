@@ -345,7 +345,7 @@ class Gs1
             (int) ($bcWidth * 0.025),
             $bcHeight + 16,
             imagecolorallocate($canvas, 10, 10, 10),
-            __DIR__ . '/../fonts/RobotoMono-SemiBold.ttf',
+            __DIR__ . '/../resources/fonts/RobotoMono-SemiBold.ttf',
             (string) $this->get($codes)
         );
         imagejpeg($canvas, $filename . ".jpg", 100);

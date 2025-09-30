@@ -125,7 +125,7 @@ class Gtin12 extends GtinAbstract
             0,
             $bcHeight + 5,
             imagecolorallocate($barcode, 10, 10, 10),
-            '../fonts/RobotoMono-SemiBold.ttf',
+            '../resources/fonts/RobotoMono-SemiBold.ttf',
             (string) substr((string) $this->number, 0, 1)
         );
         imagettftext(
@@ -135,7 +135,7 @@ class Gtin12 extends GtinAbstract
             34,
             $bcHeight + 12,
             imagecolorallocate($barcode, 10, 10, 10),
-            '../fonts/RobotoMono-SemiBold.ttf',
+            '../resources/fonts/RobotoMono-SemiBold.ttf',
             substr((string) $this->number, 1, 5)
         );
         imagettftext(
@@ -145,7 +145,7 @@ class Gtin12 extends GtinAbstract
             132,
             $bcHeight + 12,
             imagecolorallocate($barcode, 10, 10, 10),
-            '../fonts/RobotoMono-SemiBold.ttf',
+            '../resources/fonts/RobotoMono-SemiBold.ttf',
             substr((string) $this->number, 6, 5)
         );
         imagettftext(
@@ -155,7 +155,7 @@ class Gtin12 extends GtinAbstract
             $bcWidth + 14,
             $bcHeight + 5,
             imagecolorallocate($barcode, 10, 10, 10),
-            '../fonts/RobotoMono-SemiBold.ttf',
+            '../resources/fonts/RobotoMono-SemiBold.ttf',
             (string) substr((string) $this->number, -1)
         );
         imagedestroy($barcode);

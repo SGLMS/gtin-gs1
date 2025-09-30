@@ -30,7 +30,6 @@ use Picqer\Barcode\BarcodeGeneratorJPG;
  **/
 class Gtin8 extends GtinAbstract
 {
-
     /**
      * Constructor
      *
@@ -126,7 +125,7 @@ class Gtin8 extends GtinAbstract
             24,
             $bcHeight + 12,
             imagecolorallocate($barcode, 10, 10, 10),
-            '../fonts/RobotoMono-SemiBold.ttf',
+            '../resources/fonts/RobotoMono-SemiBold.ttf',
             substr((string) $this->number, 0, 4)
         );
         imagettftext(
@@ -136,7 +135,7 @@ class Gtin8 extends GtinAbstract
             102,
             $bcHeight + 12,
             imagecolorallocate($barcode, 10, 10, 10),
-            '../fonts/RobotoMono-SemiBold.ttf',
+            '../resources/fonts/RobotoMono-SemiBold.ttf',
             substr((string) $this->number, 4, 4)
         );
         imagedestroy($barcode);

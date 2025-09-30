@@ -26,14 +26,14 @@ echo $gtin->barcode();
 echo "<br/>";
 
 // Save barcode
-/* $gtin->saveBarcode('../resources/gtin'); */
-/* echo "<img src='../resources/gtin.jpg' style=''/>"; */
+/* $gtin->saveBarcode('../resources/images/gtin'); */
+/* echo "<img src='../resources/images/gtin.jpg' style=''/>"; */
 
 // Save barcode with numbers
-$gtin->saveWithNumber('../resources/gtin_numbers');
+$gtin->saveWithNumber('../resources/images/gtin_numbers');
 echo "JPG (with numbers):";
 echo "<br/>";
-echo "<img src='../resources/gtin_numbers.jpg' style=''/>";
+echo "<img src='../resources/images/gtin_numbers.jpg' style=''/>";
 
 echo "<hr>";
 
@@ -49,12 +49,12 @@ echo "<br/>";
 echo "SVG:";
 echo "<br/>";
 echo $gtin->barcode();
-$gtin->saveBarcode('../resources/gtin12');
-$gtin->saveWithNumber('../resources/gtin12_numbers');
+$gtin->saveBarcode('../resources/images/gtin12');
+$gtin->saveWithNumber('../resources/images/gtin12_numbers');
 echo "<br/>";
 echo "JPG (with numbers):";
 echo "<br/>";
-echo "<img src='../resources/gtin12_numbers.jpg' style='scale:.75;'/>";
+echo "<img src='../resources/images/gtin12_numbers.jpg' style='scale:.75;'/>";
 
 echo "<hr>";
 
@@ -67,14 +67,14 @@ echo "<br/>";
 echo "SVG:";
 echo "<br/>";
 echo $gtin->barcode();
-$gtin->saveBarcode('../resources/gtin8');
-echo "<img src='../resources/gtin8.jpg' />";
+$gtin->saveBarcode('../resources/images/gtin8');
+echo "<img src='../resources/images/gtin8.jpg' />";
 
-$gtin->saveWithNumber('../resources/gtin8_numbers');
+$gtin->saveWithNumber('../resources/images/gtin8_numbers');
 echo "<br/>";
 echo "JPG (with numbers):";
 echo "<br/>";
-echo "<img src='../resources/gtin8_numbers.jpg' style='scale:0.75'/>";
+echo "<img src='../resources/images/gtin8_numbers.jpg' style='scale:0.75'/>";
 
 echo "<hr>";
 
@@ -82,7 +82,7 @@ $gs1 = Gs1::parse('(01)10012345678902(10)ABC123(3201)000500(3302)000700(17)25063
 var_dump($gs1);
 echo $gs1;
 echo $gs1->barcode(showNumbers:true);
-$gs1->saveBarcode('../resources/gs1', ['01','37', '21','3102','3302'], 80);
+$gs1->saveBarcode('../resources/images/gs1', ['01','37', '21','3102','3302'], 80);
 
 echo "<hr>";
 

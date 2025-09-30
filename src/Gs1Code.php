@@ -3,7 +3,7 @@
 /**
  * SGLMS GS1 / GTIN
  *
- * PHP Version 8.1
+ * PHP Version 8.3
  *
  * @category SGLMS_Library
  * @package  GS1GTIN
