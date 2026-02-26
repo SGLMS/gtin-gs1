@@ -138,10 +138,10 @@ class Gs1
         $content = !$content && !Gtin::validate($gtin) ? $gtin : null;
         $gtin    = Gtin::validate($gtin) ? $gtin : null;
         if(strlen($productionDate) > 6) {
-            $productionDate = \Carbon\Carbon::parse($productionDate)->formate('ymd');
+            $productionDate = \Carbon\Carbon::parse($productionDate)->format('ymd');
         }
         if(strlen($expirationDate) > 6) {
-            $expirationDate = \Carbon\Carbon::parse($expirationDate )->formate('ymd');
+            $expirationDate = \Carbon\Carbon::parse($expirationDate )->format('ymd');
         }
         $gs1 = new self(array_filter([
             '00' => $sscc,
