@@ -1,6 +1,6 @@
 {
     "name": "sglms/gs1-gtin",
-    "description": "Classes to create or validate GTIN (Global Trade Item Number)",
+    "description": "Classes to create or validate GTIN (Global Trade Item Number) and GS1; includes barcode generation. Laravel 12 Service Provider.",
     "type": "library",
     "keywords": [
         "gs1",
