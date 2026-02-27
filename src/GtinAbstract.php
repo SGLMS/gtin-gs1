@@ -83,11 +83,15 @@ abstract class GtinAbstract
             }
         } else {
             $this->buildCompanyItemNumber($itemNumber, $companyPrefix, $this->type);
-            $this->checkDigit = Gtin::calculateCheckDigit($this->companyItemNumber);
+            $numberForCheckDigit = $this->companyItemNumber;
+            if (in_array($this->type, ['GTIN-14', 'EAN-14', 'ITF-14'], true)) {
+                $numberForCheckDigit = (string) $this->packagingLevel.$this->companyItemNumber;
+            }
+            $this->checkDigit = Gtin::calculateCheckDigit($numberForCheckDigit);
         }
 
         $this->number = (string) (
-            ($this->type == 'GTIN-14' ? (string) $packagingLevel : '').
+            (in_array($this->type, ['GTIN-14', 'EAN-14', 'ITF-14'], true) ? (string) $this->packagingLevel : '').
             (string) $this->companyItemNumber.
             (string) $this->checkDigit
         );
@@ -350,8 +354,8 @@ abstract class GtinAbstract
                 throw new \ErrorException(__('Not enough digits!'), 1000);
             } else {
                 $checkDigit = substr((string) $number, -1);
-                // die(var_dump($number, $checkDigit));
                 $companyItemNumber = substr((string) $number, 0, -1);
+                // die(var_dump($number, $checkDigit, $companyItemNumber, self::calculateCheckDigit((string) $companyItemNumber)));
                 if ((int) $checkDigit === self::calculateCheckDigit((string) $companyItemNumber)) {
                     return true;
                 }
