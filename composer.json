@@ -1,12 +1,13 @@
 {
+    "$schema": "https://getcomposer.org/schema.json",
     "name": "sglms/gs1-gtin",
-    "description": "Classes to create or validate GTIN (Global Trade Item Number)",
     "type": "library",
+    "description": "Classes to create or validate GTIN (Global Trade Item Number) and GS1; includes barcode generation. Laravel 12 Service Provider.",
     "keywords": [
+        "sglms",
         "gs1",
         "gtin",
-        "laravel",
-        "sglms"
+        "laravel"
     ],
     "homepage": "https://sglms.com",
     "license": "MIT",
@@ -22,6 +23,8 @@
     },
     "require-dev": {
         "laravel/framework": "^12.0",
+        "laravel/pail": "^1.2.2",
+        "laravel/pint": "^1.27",
         "phpunit/phpunit": "^12"
     },
     "autoload": {
@@ -33,6 +36,9 @@
         "psr-4": {
             "Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "pint": "pint"
     },
     "extra": {
         "laravel": {

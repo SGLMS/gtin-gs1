@@ -6,9 +6,10 @@
  * PHP Version 8.1
  *
  * @category SGLMS_Library
- * @package  GS1GTIN
+ *
  * @author   Jaime C. Rubin-de-Celis <james@sglms.com>
  * @license  MIT (https://sglms.com/license)
+ *
  * @link     https://sglms.com
  **/
 
@@ -16,25 +17,20 @@ declare(strict_types=1);
 
 namespace Sglms\Gs1Gtin;
 
-use Picqer\Barcode\BarcodeGeneratorPNG;
-use Picqer\Barcode\BarcodeGeneratorJPG;
-
 /**
  * Class: Gtin12
  *
  * @category SGLMS_Library
- * @package  GS1GTIN
+ *
  * @author   Jaime C. Rubin-de-Celis <james@sglms.com>
  * @license  MIT (https://sglms.com/license)
+ *
  * @link     https://sglms.com
  **/
 class Gtin12 extends GtinAbstract
 {
     /**
      * Constructor
-     *
-     * @param integer      $itemNumber
-     * @param string|null  $companyPrefix
      */
     public function __construct(
         int $itemNumber,
@@ -50,23 +46,22 @@ class Gtin12 extends GtinAbstract
     /**
      * Save barcode image (PNG).
      *
-     * @param string $filename Separation or with of barcode
-     * @param int    $sep      Separation or with of barcode
-     * @param int    $height   Barcode Height
-     *
+     * @param  string  $filename  Separation or with of barcode
+     * @param  int  $sep  Separation or with of barcode
+     * @param  int  $height  Barcode Height
      * @return string
      **/
     public function saveWithNumber(
-        string $filename = "name",
+        string $filename = 'name',
         int $height = 80
     ): void {
         $generator = $this->saveBarcode($filename, $height);
-        $barcode   = imagecreatefromjpeg($filename . ".jpg");
-        $bcWidth   = imagesx($barcode);
-        $bcHeight  = imagesy($barcode);
+        $barcode = imagecreatefromjpeg($filename.'.jpg');
+        $bcWidth = imagesx($barcode);
+        $bcHeight = imagesy($barcode);
 
-        $whiteBG   = imagecreatetruecolor(10, 10);
-        $bgColor   = imagecolorallocate($whiteBG, 255, 255, 255);
+        $whiteBG = imagecreatetruecolor(10, 10);
+        $bgColor = imagecolorallocate($whiteBG, 255, 255, 255);
         imagefilledrectangle(
             $whiteBG,
             0,
@@ -82,7 +77,7 @@ class Gtin12 extends GtinAbstract
             $bcHeight - 8,
             0,
             0,
-            (int) ($bcWidth / 2  - 6),
+            (int) ($bcWidth / 2 - 6),
             10,
             10,
             10
@@ -91,19 +86,19 @@ class Gtin12 extends GtinAbstract
         imagecopyresampled(
             $barcode,
             $whiteBG,
-            (int) ($bcWidth / 2  + 5),
+            (int) ($bcWidth / 2 + 5),
             $bcHeight - 8,
             0,
             0,
-            (int) ($bcWidth / 2  - 11),
+            (int) ($bcWidth / 2 - 11),
             10,
             10,
             10
         );
 
         // Canvas for new (final) image
-        $canvas   = imagecreatetruecolor($bcWidth + 24, $bcHeight + 16);
-        $bgColor  = imagecolorallocate($canvas, 255, 255, 255);
+        $canvas = imagecreatetruecolor($bcWidth + 24, $bcHeight + 16);
+        $bgColor = imagecolorallocate($canvas, 255, 255, 255);
         imagefilledrectangle($canvas, 0, 0, $bcWidth + 24, $bcHeight + 16, $bgColor);
         imagecopyresampled(
             $canvas,
@@ -159,8 +154,8 @@ class Gtin12 extends GtinAbstract
             (string) substr((string) $this->number, -1)
         );
         imagedestroy($barcode);
-        imagejpeg($canvas, $filename . ".jpg", 100);
+        imagejpeg($canvas, $filename.'.jpg', 100);
     }
 }
 
-class_alias("\Sglms\Gs1Gtin\Gtin12", "UPCA");
+class_alias("\Sglms\Gs1Gtin\Gtin12", 'UPCA');

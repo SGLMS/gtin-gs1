@@ -20,13 +20,13 @@ Generate GTIN-14 (prefix + company number + item reference + check digit):
 use Sglms\Gs1Gtin\Gtin;
 
 $gtin = Gtin::create(9876543210);
-// GTIN: 10098765432105
+// GTIN: 10098765432102
 
 $gtin = Gtin::create(
     itemNumber: 98765,
     companyPrefix: '0123'
 );
-// GTIN: 10123000987659
+// GTIN: 10123000987656
 
 $gtin = Gtin::create(
     itemNumber: 987654,
@@ -34,7 +34,7 @@ $gtin = Gtin::create(
     type: 'GTIN-14',
     packagingLevel: 2
 );
-// GTIN: 21230009876545
+// GTIN: 21230009876549
 
 ```
 #### Display (on-the-fly)

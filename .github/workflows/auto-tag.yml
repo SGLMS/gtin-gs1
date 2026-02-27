@@ -1,0 +1,50 @@
+name: Auto Tag
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get last tag
+        id: last
+        run: |
+          git fetch --tags
+          TAG=$(git tag --sort=-v:refname | head -n 1)
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Compute next tag
+        id: next
+        run: |
+          LAST="${{ steps.last.outputs.tag }}"
+
+          if [ -z "$LAST" ]; then
+            NEXT="1.0.0"
+          else
+            IFS='.' read -r A B C <<< "$LAST"
+            NEXT="$A.$B.$((C+1))"
+          fi
+
+          echo "next=$NEXT" >> $GITHUB_OUTPUT
+
+      - name: Create tag
+        run: |
+          TAG="${{ steps.next.outputs.next }}"
+
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag already exists, skipping"
+            exit 0
+          fi
+
+          git tag "$TAG"
+          git push origin "$TAG"
