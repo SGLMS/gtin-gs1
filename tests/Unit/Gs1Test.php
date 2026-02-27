@@ -39,7 +39,7 @@ class Gs1Test extends TestCase
 
     public function test_save_barcode_creates_file(): void
     {
-        $file =  './test_barcode';
+        $file = './test_barcode';
 
         $this->gs1->saveBarcode($file);
 
