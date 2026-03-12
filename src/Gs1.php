@@ -106,7 +106,7 @@ class Gs1
         $s[] = $this->content ? '(02)'.$this->content : null;
         $s[] = $this->batch ? '(10)'.$this->batch : null;
         $s[] = $this->netWeight ? '(3102)'.str_pad((string) $this->netWeight, 6, '0', STR_PAD_LEFT) : null;
-        $s[] = $this->grossWeight ? '(3302)'.str_pad((string) $this->grossWeight, 6, '0') : null;
+        $s[] = $this->grossWeight ? '(3302)'.str_pad((string) $this->grossWeight, 6, '0', STR_PAD_LEFT) : null;
         $s[] = $this->productionDate ? '(11)'.$this->productionDate : null;
         $s[] = $this->expirationDate ? '(17)'.$this->expirationDate : null;
         $s[] = $this->serial ? '(21)'.$this->serial : null;
