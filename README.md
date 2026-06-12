@@ -7,7 +7,7 @@ In this version we have included Laravel Service Providers.
 ## Installation
 
 ```bash
-composer require sglms/gtin-gs1
+composer require sglms/gs1-gtin
 ```
 
 ## Usage
