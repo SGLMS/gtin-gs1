@@ -18,14 +18,14 @@
         }
     ],
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "picqer/php-barcode-generator": "^3.2"
     },
     "require-dev": {
-        "laravel/framework": "^12.0",
+        "laravel/framework": "^13.0",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.27",
-        "phpunit/phpunit": "^12"
+        "phpunit/phpunit": "^13"
     },
     "autoload": {
         "psr-4": {
@@ -49,7 +49,8 @@
                 "Gtin": "Sglms\\Gs1Gtin\\Facades\\Gtin",
                 "Gs1": "Sglms\\Gs1Gtin\\Facades\\Gs1"
             }
-        }
+        } 
+        
     },
     "minimum-stability": "dev",
     "prefer-stable": true
