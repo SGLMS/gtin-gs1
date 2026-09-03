@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace Sglms\Gs1Gtin;
 
+use Carbon\Carbon;
 use Picqer\Barcode\BarcodeGeneratorJPG;
 use Picqer\Barcode\Renderers\JpgRenderer;
 use Picqer\Barcode\Renderers\SvgRenderer;
@@ -186,7 +187,7 @@ class Gs1
         }
 
         try {
-            return \Carbon\Carbon::parse($value)->format('ymd');
+            return Carbon::parse($value)->format('ymd');
         } catch (\Throwable $e) {
             return null;
         }
@@ -204,7 +205,6 @@ class Gs1
         $array = [];
         foreach (Gs1Code::filter($codes) as $code) {
             if (isset($this->data[$code->value])) {
-                // dump($code, $this->data[$code->value]);
                 $array[] = "({$code->value})".$this->data[$code->value] ?? null;
             }
         }
