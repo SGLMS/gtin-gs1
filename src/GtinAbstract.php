@@ -34,8 +34,14 @@ use Picqer\Barcode\Types\TypeCode128;
  *
  * @link     https://sglms.com
  **/
-abstract class GtinAbstract
+abstract class GtinAbstract implements \Stringable
 {
+    public const PACKAGE_ROOT = __DIR__.'/..';
+
+    public const PACKAGE_RESOURCES_PATH = self::PACKAGE_ROOT.'/resources';
+
+    public const FONT_PATH = self::PACKAGE_RESOURCES_PATH.'/fonts/RobotoMono-SemiBold.ttf';
+
     protected string $companyItemNumber;
 
     protected string $companyPrefix;
@@ -57,7 +63,7 @@ abstract class GtinAbstract
      * @param  int|null  $packagingLevel  Packaging Level (Indicator according to GS1 Standards). Default: 1
      */
     public function __construct(
-        int $itemNumber,
+        int|string $itemNumber,
         ?string $companyPrefix = null,
         ?string $type = 'GTIN-14',
         ?int $packagingLevel = 1
@@ -104,35 +110,54 @@ abstract class GtinAbstract
      *
      * @return string
      **/
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->number;
+    }
+
+    public function value(): string
+    {
+        return (string) $this->number;
+    }
+
+    public function type(): string
+    {
+        return $this->type;
+    }
+
+    public function packagingLevel(): int
+    {
+        return $this->packagingLevel;
+    }
+
+    public function isValid(): bool
+    {
+        return self::validate((string) $this->number, $this->type);
     }
 
     /**
      * Create a GTIN number (object) from a int or string
      *
-     * @param  int  $itemNumber  Number
-     * @param  string  $companyPrefix  Client Code or Id
-     * @param  string  $type  [Ex. GTIN-14]
-     * @param  int  $packagingLevel  Packaging Level (Indicator according to GS1 Standards)
-     * @return \Sglms\Gtin\Gtin
+     * @param  int|string  $itemNumber  Number
+     * @param  string|null  $companyPrefix  Client Code or Id
+     * @param  string|null  $type  [Ex. GTIN-14]
+     * @param  int|null  $packagingLevel  Packaging Level (Indicator according to GS1 Standards)
+     * @return static
      **/
     public static function create(
-        int $itemNumber,
+        int|string $itemNumber,
         ?string $companyPrefix = null,
         ?string $type = 'GTIN-14',
         ?int $packagingLevel = 1
-    ): \Sglms\Gs1Gtin\GtinAbstract {
+    ): static {
         $class = get_called_class();
-        $gtin = new $class(
+
+        return new $class(
             $itemNumber,
             $companyPrefix,
             $type,
             $packagingLevel
         );
-
-        return $gtin;
     }
 
     /**
@@ -143,9 +168,9 @@ abstract class GtinAbstract
      * @param  string  $type  [Ex. GTIN-14, etc.]
      */
     public function buildCompanyItemNumber(
-        $itemNumber,
-        $companyPrefix,
-        $type = 'GTIN-14'
+        int|string $itemNumber,
+        ?string $companyPrefix,
+        string $type = 'GTIN-14'
     ): string {
         $this->itemReference = (string) $itemNumber;
         $this->companyPrefix = (string) $companyPrefix;
@@ -184,6 +209,11 @@ abstract class GtinAbstract
         $cd = 10 - ($sum % 10);
 
         return $cd == 10 ? 0 : $cd;
+    }
+
+    public function number(): string
+    {
+        return (string) $this->number;
     }
 
     public function getBarcode()
@@ -323,7 +353,6 @@ abstract class GtinAbstract
         $bgColor = imagecolorallocate($canvas, 255, 255, 255);
         imagefilledrectangle($canvas, 0, 0, $bcWidth, $bcHeight + 20, $bgColor);
         imagecopyresampled($canvas, $barcode, 0, 0, 0, 0, $bcWidth, $bcHeight, $bcWidth, $bcHeight);
-        imagedestroy($barcode);
 
         imagettftext(
             $canvas,
@@ -332,7 +361,7 @@ abstract class GtinAbstract
             (int) ($bcWidth * 0.25),
             $bcHeight + 16,
             imagecolorallocate($canvas, 10, 10, 10),
-            '../resources/fonts/RobotoMono-SemiBold.ttf',
+            self::FONT_PATH,
             (string) $this->number
         );
         imagejpeg($canvas, $filename.'.jpg', 100);
@@ -355,7 +384,6 @@ abstract class GtinAbstract
             } else {
                 $checkDigit = substr((string) $number, -1);
                 $companyItemNumber = substr((string) $number, 0, -1);
-                // die(var_dump($number, $checkDigit, $companyItemNumber, self::calculateCheckDigit((string) $companyItemNumber)));
                 if ((int) $checkDigit === self::calculateCheckDigit((string) $companyItemNumber)) {
                     return true;
                 }

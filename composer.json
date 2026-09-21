@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "sglms/gs1-gtin",
     "type": "library",
-    "description": "Classes to create or validate GTIN (Global Trade Item Number) and GS1; includes barcode generation. Laravel 12 Service Provider.",
+    "description": "Classes to create or validate GTIN and GS1 identifiers, with barcode generation support for Laravel packages.",
     "keywords": [
         "sglms",
         "gs1",
@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "php": ">=8.4",
+        "php": "^8.2",
         "picqer/php-barcode-generator": "^3.2"
     },
     "require-dev": {

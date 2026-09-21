@@ -6,14 +6,13 @@ use Illuminate\Support\ServiceProvider;
 
 class Gs1ServiceProvider extends ServiceProvider
 {
-    public function register()
+    public function register(): void
     {
-        $this->app->singleton('gs1', function ($app) {
-            return new Gs1;
-        });
+        $this->app->singleton('gs1', static fn () => new Gs1);
+        $this->app->singleton('gtin', static fn () => new Gtin);
     }
 
-    public function boot()
+    public function boot(): void
     {
         //
     }

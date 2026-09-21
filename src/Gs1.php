@@ -57,7 +57,11 @@ class Gs1
 
     public ?string $expirationDate; // 17
 
-    public ?int $pieces;         // 37
+    public ?int $pieces;            // 37
+
+    public bool $isValid = false;
+
+    public ?GtinAbstract $gtinObject = null;
 
     /**
      * Constructor
@@ -220,80 +224,82 @@ class Gs1
      *
      * @return void
      */
-    public static function parse(
-        string $string
-    ) {
-        $gs1 = new self;
-        $gs1->gs1 = $string;
-        $matches = collect();
-        preg_match("/^([\(]?00[\)]?)([0-9]{14,20})/", $string, $matches);
+    public static function parse(string $string): self
+    {
+        $data = [];
+        $matches = [];
+
+        preg_match('/^([\(]?00[\)]?)([0-9]{14,20})/', $string, $matches);
         if ($matches) {
-            $gs1->sscc = $matches[2];
-            $gs1->data['00'] = $gs1->sscc;
+            $data['00'] = $matches[2];
         }
-        preg_match("/^([\(]?01[\)]?)([0-9]{14})/", $string, $matches);
+
+        preg_match('/^([\(]?01[\)]?)([0-9]{14})/', $string, $matches);
         if ($matches) {
             $gtin = $matches[2];
             if (Gtin::validate($gtin)) {
-                $gs1->gtin = $gtin;
-                $gs1->data['01'] = $gs1->gtin;
+                $data['01'] = $gtin;
             } else {
-                $gs1->content = $gtin;
-                $gs1->data['02'] = $gs1->content;
+                $data['02'] = $gtin;
             }
-            $string = preg_replace("/^([\(]?01[\)]?)([0-9]{14})/", '', $string);
+            $string = preg_replace('/^([\(]?01[\)]?)([0-9]{14})/', '', $string);
         }
-        preg_match("/^([\(]?02[\)]?)([0-9]{6,14})/", $string, $matches);
+
+        preg_match('/^([\(]?02[\)]?)([0-9]{6,14})/', $string, $matches);
         if ($matches) {
-            $gs1->content = $matches[2];
-            $gs1->data['02'] = $gs1->content;
-            $string = preg_replace("/^([\(]?02[\)]?)([0-9]{6,14})/", '', $string);
+            $data['02'] = $matches[2];
+            $string = preg_replace('/^([\(]?02[\)]?)([0-9]{6,14})/', '', $string);
         }
-        preg_match("/([\(]?3102[\)]?)([0-9]{6})/", $string, $weights);
+
+        preg_match('/([\(]?3102[\)]?)([0-9]{6})/', $string, $weights);
         if ($weights) {
-            $gs1->netWeight = str_pad((string) round((int) $weights[2], 0), 6, '0', STR_PAD_LEFT);
-            $gs1->data['3102'] = $gs1->netWeight;
-            $string = preg_replace("/([\(]?3102[\)]?)([0-9]{6})/", '', $string);
+            $data['3102'] = str_pad((string) round((int) $weights[2], 0), 6, '0', STR_PAD_LEFT);
+            $string = preg_replace('/([\(]?3102[\)]?)([0-9]{6})/', '', $string);
         }
-        preg_match("/([\(]?3302[\)]?)([0-9]{6})/", $string, $weights);
+
+        preg_match('/([\(]?3302[\)]?)([0-9]{6})/', $string, $weights);
         if ($weights) {
-            $gs1->grossWeight = str_pad((string) round((int) $weights[2], 0), 6, '0', STR_PAD_LEFT);
-            $gs1->data['3302'] = $gs1->grossWeight;
-            $string = preg_replace("/([\(]?3302[\)]?)([0-9]{6})/", '', $string);
+            $data['3302'] = str_pad((string) round((int) $weights[2], 0), 6, '0', STR_PAD_LEFT);
+            $string = preg_replace('/([\(]?3302[\)]?)([0-9]{6})/', '', $string);
         }
-        preg_match("/([\(]?3201[\)]?)([0-9]{6})/", $string, $weights);  // Net weight in pounds; 1 decimal
+
+        preg_match('/([\(]?3201[\)]?)([0-9]{6})/', $string, $weights);
         if ($weights) {
-            $gs1->netWeight = str_pad((string) round($weights[2] / 10 / 2.205 * 100, 0), 6, '0', STR_PAD_LEFT);
-            $gs1->data['3102'] = $gs1->netWeight;
-            $string = preg_replace("/([\(]?3201[\)]?)([0-9]{6})/", '', $string);
+            $data['3102'] = str_pad((string) round($weights[2] / 10 / 2.205 * 100, 0), 6, '0', STR_PAD_LEFT);
+            $string = preg_replace('/([\(]?3201[\)]?)([0-9]{6})/', '', $string);
         }
-        preg_match("/([\(]?11[\)]?)(\d{2}(?:0\d|1[0-2])(?:[0-2]\d|3[01]))/", $string, $matches);
+
+        preg_match('/([\(]?11[\)]?)(\d{2}(?:0\d|1[0-2])(?:[0-2]\d|3[01]))/', $string, $matches);
         if ($matches) {
-            $gs1->productionDate = $matches[2];
-            $gs1->data['11'] = $gs1->productionDate;
-            $string = preg_replace("/([\(]?11[\)]?)(\d{2}(?:0\d|1[0-2])(?:[0-2]\d|3[01]))/", '', $string);
+            $data['11'] = $matches[2];
+            $string = preg_replace('/([\(]?11[\)]?)(\d{2}(?:0\d|1[0-2])(?:[0-2]\d|3[01]))/', '', $string);
         }
-        preg_match("/([\(]?17[\)]?)(\d{2}(?:0\d|1[0-2])(?:[0-2]\d|3[01]))/", $string, $matches);
+
+        preg_match('/([\(]?17[\)]?)(\d{2}(?:0\d|1[0-2])(?:[0-2]\d|3[01]))/', $string, $matches);
         if ($matches) {
-            $gs1->expirationDate = $matches[2];
-            $gs1->data['17'] = $gs1->expirationDate;
-            $string = preg_replace("/([\(]?17[\)]?)(\d{2}(?:0\d|1[0-2])(?:[0-2]\d|3[01]))/", '', $string);
+            $data['17'] = $matches[2];
+            $string = preg_replace('/([\(]?17[\)]?)(\d{2}(?:0\d|1[0-2])(?:[0-2]\d|3[01]))/', '', $string);
         }
-        preg_match("/([\(]?21[\)]?)([0-9SN]{1,20})/", $string, $matches);
+
+        preg_match('/([\(]?21[\)]?)([0-9SN]{1,20})/', $string, $matches);
         if ($matches) {
-            $gs1->serial = $matches[2];
-            $gs1->data['21'] = $gs1->serial;
+            $data['21'] = $matches[2];
         }
-        preg_match("/([\(]?37[\)]?)([0-9]{1,4})/", $string, $matches);
+
+        preg_match('/([\(]?37[\)]?)([0-9]{1,4})/', $string, $matches);
         if ($matches) {
-            $gs1->pieces = (int) $matches[2];
-            $gs1->data['37'] = $gs1->pieces;
+            $data['37'] = (int) $matches[2];
         }
-        preg_match("/([\(]?10[\)]?)([0-9A-Z]{1,20})/", $string, $matches);
+
+        preg_match('/([\(]?10[\)]?)([0-9A-Z]{1,20})/', $string, $matches);
         if ($matches) {
-            $gs1->batch = $matches[2];
-            $gs1->data['10'] = $gs1->batch;
+            $data['10'] = $matches[2];
         }
+
+        $gs1 = new self($data);
+        $gs1->gs1 = $string; // keep original raw string for trace/debugging
+        $gs1->isValid = isset($data['01']) && Gtin::validate((string) $data['01']);
+        $gs1->gtinObject = $gs1->isValid ? Gtin::create((string) $data['01']) : null;
 
         return $gs1;
     }
@@ -373,7 +379,6 @@ class Gs1
             $bcWidth,
             $bcHeight
         );
-        imagedestroy($barcode);
 
         imagettftext(
             $canvas,
@@ -382,7 +387,7 @@ class Gs1
             (int) ($bcWidth * 0.025),
             $bcHeight + 16,
             imagecolorallocate($canvas, 10, 10, 10),
-            __DIR__.'/../resources/fonts/RobotoMono-SemiBold.ttf',
+            GtinAbstract::FONT_PATH,
             (string) $this->get($codes)
         );
         imagejpeg($canvas, $filename.'.jpg', 100);

@@ -27,6 +27,21 @@ namespace Sglms\Gs1Gtin;
  *
  * @link     https://sglms.com
  **/
-class Gtin extends GtinAbstract {}
+final class Gtin extends GtinAbstract
+{
+    public static function create(
+        int|string $itemNumber,
+        ?string $companyPrefix = null,
+        ?string $type = 'GTIN-14',
+        ?int $packagingLevel = 1,
+    ): self {
+        return new self(
+            itemNumber: $itemNumber,
+            companyPrefix: $companyPrefix,
+            type: $type,
+            packagingLevel: $packagingLevel,
+        );
+    }
+}
 
 class_alias("\Sglms\Gs1Gtin\Gtin", 'ITF14');
