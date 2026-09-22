@@ -199,17 +199,14 @@ class Gs1
 
     /**
      * Get GS1 filtered by codes.
-     *
-     *
-     * @return void
      */
     public function get(
         ?array $codes = ['01', '21', '17', '3102']
-    ) {
+    ): string {
         $array = [];
         foreach (Gs1Code::filter($codes) as $code) {
-            if (isset($this->data[$code->value])) {
-                $array[] = "({$code->value})".$this->data[$code->value] ?? null;
+            if (isset($this->data[$code->value]) && $this->data[$code->value] != null) {
+                $array[] = "({$code->value})".$this->data[$code->value];
             }
         }
 
@@ -220,9 +217,6 @@ class Gs1
      * Parse GS1 String
      *
      * Recognizes both (01) and 01 formats.
-     *
-     *
-     * @return void
      */
     public static function parse(string $string): self
     {
