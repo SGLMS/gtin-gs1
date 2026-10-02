@@ -1142,6 +1142,7 @@
         },
         {
             "name": "laravel/framework",
+<<<<<<< Updated upstream
             "version": "v13.34.0",
             "source": {
                 "type": "git",
@@ -1152,6 +1153,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/laravel/framework/zipball/c829b4982d29344cbcf1d7ad78eb5d2bb8ae66c4",
                 "reference": "c829b4982d29344cbcf1d7ad78eb5d2bb8ae66c4",
+=======
+            "version": "v13.33.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/framework.git",
+                "reference": "91188a17ceaa3dbace6e8a5f7abd0d042e466359"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/91188a17ceaa3dbace6e8a5f7abd0d042e466359",
+                "reference": "91188a17ceaa3dbace6e8a5f7abd0d042e466359",
+>>>>>>> Stashed changes
                 "shasum": ""
             },
             "require": {
@@ -1369,7 +1382,11 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
+<<<<<<< Updated upstream
             "time": "2026-09-29T12:46:21+00:00"
+=======
+            "time": "2026-09-22T14:12:33+00:00"
+>>>>>>> Stashed changes
         },
         {
             "name": "laravel/pail",
